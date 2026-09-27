@@ -11,6 +11,7 @@ $types = @{
   '.webp' = 'image/webp'
   '.png'  = 'image/png'
   '.ico'  = 'image/x-icon'
+  '.webmanifest' = 'application/manifest+json'
 }
 
 $listener = New-Object System.Net.HttpListener

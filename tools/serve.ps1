@@ -1,8 +1,8 @@
 # Minimal static file server for local testing.
-# Usage: powershell -ExecutionPolicy Bypass -File tools\serve.ps1 [-Port 8000]
-param([int]$Port = 8000)
+# Usage: powershell -ExecutionPolicy Bypass -File tools\serve.ps1 [-Port 8000] [-Root <folder>]
+param([int]$Port = 8000, [string]$Root = (Join-Path $PSScriptRoot '..'))
 
-$root = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
+$root = (Resolve-Path $Root).Path
 $types = @{
   '.html' = 'text/html; charset=utf-8'
   '.css'  = 'text/css; charset=utf-8'

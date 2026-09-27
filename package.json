@@ -1,0 +1,17 @@
+{
+  "name": "tenrakuhai",
+  "version": "1.0.0",
+  "private": true,
+  "description": "転落牌 - 積んで、そろえて、落とさない。",
+  "scripts": {
+    "build": "node tools/app/build-www.mjs",
+    "sync": "npm run build && npx cap sync ios"
+  },
+  "dependencies": {
+    "@capacitor/core": "8.5.2",
+    "@capacitor/ios": "8.5.2"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "8.5.2"
+  }
+}

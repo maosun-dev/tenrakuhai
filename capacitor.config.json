@@ -1,0 +1,9 @@
+{
+  "appId": "io.github.maosundev.tenrakuhai",
+  "appName": "転落牌",
+  "webDir": "www",
+  "ios": {
+    "contentInset": "never",
+    "backgroundColor": "#1a1745"
+  }
+}

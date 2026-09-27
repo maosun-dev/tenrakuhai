@@ -1,2 +1,6 @@
 # 分ける前の元ファイル（Gitの最初の記録に入っているので不要）
 _backup/
+
+# アプリ用（npm install / npm run build で作り直せる）
+node_modules/
+www/

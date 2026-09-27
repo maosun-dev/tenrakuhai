@@ -10,6 +10,11 @@ name: iPhone版をTestFlightへ
 
 on:
   workflow_dispatch:
+    inputs:
+      production:
+        description: '本物の広告を使う（ストアに出す版だけオンにする。オフならテスト広告）'
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -35,6 +40,8 @@ jobs:
           cache: npm
 
       - name: ゲームのファイルをアプリに入れる
+        env:
+          ADS_PRODUCTION: ${{ inputs.production && '1' || '0' }}
         run: |
           npm ci
           npm run build

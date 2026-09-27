@@ -276,8 +276,11 @@ const ground=new CANNON.Body({mass:0,material:matGround});
 ground.addShape(new CANNON.Box(new CANNON.Vec3(PLAT.w/2,.5,PLAT.d/2)));ground.position.set(0,-.5,0);world.addBody(ground);
 
 /* ---------- 音 ---------- */
-let actx=null,muted=false,lastClack=0;
-function ac(){if(!actx){try{actx=new(window.AudioContext||window.webkitAudioContext)();}catch(e){}}if(actx&&actx.state==='suspended')actx.resume();return actx;}
+let actx=null,muted=false,lastClack=0,adPlaying=false;
+function ac(){if(!actx){try{actx=new(window.AudioContext||window.webkitAudioContext)();}catch(e){}}if(actx&&actx.state==='suspended'&&!adPlaying)actx.resume();return actx;}
+// 全画面の広告が流れている間は、ゲームの音楽と効果音を止める（js/ads.js が知らせる）
+window.addEventListener('adstart',()=>{adPlaying=true;if(actx&&actx.state==='running')actx.suspend().catch(()=>{});});
+window.addEventListener('adend',()=>{adPlaying=false;if(actx&&actx.state==='suspended')actx.resume().catch(()=>{});});
 function clack(v){
   const a=actx;if(!a||muted)return;const t=a.currentTime;if(t-lastClack<.035)return;lastClack=t;
   const o=a.createOscillator(),g=a.createGain();o.type='triangle';
@@ -529,8 +532,10 @@ function newGame(){
   if(held){scene.remove(held.mesh);held=null;}
   lap=1;fillWall();
   score=0;lives=3;wins=0;streak=0;maxStreak=0;bestHand=null;maxHeight=0;best=null;choices=[];settledTop=0;graceUntil=0;
+  revived=false;reviveResume=null;
   if(debug)debugSetup();
-  $('overOv').classList.remove('show');$('winOv').classList.remove('show');
+  $('overOv').classList.remove('show');$('winOv').classList.remove('show');$('reviveOv').classList.remove('show');
+  if(Ads)Ads.hideBanner();
   toChoose();
 }
 function toChoose(){
@@ -588,11 +593,40 @@ function onSettled(){
   const top=towerTop();settledTop=top;
   if(top>maxHeight+0.05&&maxHeight>0.5&&top>2.5)toast('タワー新記録！','gold');
   maxHeight=Math.max(maxHeight,top);
-  if(lives<=0){gameOver('ハートがなくなっちゃった');return;}
+  if(lives<=0){heartsOut(afterSettled);return;}
+  afterSettled();
+}
+function afterSettled(){
   const had=!!best,c=boardCounts();best=c.reduce((a,b)=>a+b,0)>=14?findBest(c):null;
   if(best&&!had){chime([988,1319],.09,'sine',.1);toast('役ができた！','gold');}
   toChoose();
 }
+
+/* ---------- 広告を見てハート回復（iPhoneアプリ版だけ・1ゲーム1回） ---------- */
+const Ads=window.Ads||null;
+let revived=false,reviveResume=null;
+function heartsOut(resume){
+  if(state==='revive')return;
+  if(revived||debug||!Ads||!Ads.canRevive()){gameOver('ハートがなくなっちゃった');return;}
+  const prev=state,gid=gameId;
+  state='revive';drag=null;
+  reviveResume=()=>{state=prev;resume();};
+  // 「落ちちゃった…」の演出が終わってから聞く
+  const wait=toastType==='fall'?Math.max(0,toastEndAt-400-performance.now()):0;
+  setTimeout(()=>{if(state==='revive'&&gid===gameId)$('reviveOv').classList.add('show');},wait);
+}
+$('reviveYes').onclick=async()=>{
+  const btn=$('reviveYes');if(btn.disabled)return;btn.disabled=true;
+  const gid=gameId,ok=await Ads.showReward();
+  btn.disabled=false;
+  if(gid!==gameId||state!=='revive')return;
+  $('reviveOv').classList.remove('show');
+  if(!ok){reviveResume=null;gameOver('ハートがなくなっちゃった');return;}
+  revived=true;lives=1;graceUntil=performance.now()+1500;updateHud();
+  toast('ハートが回復！','gold','ハート +1');chime([659,880,1175],.08,'sine',.1);
+  const r=reviveResume;reviveResume=null;r();
+};
+$('reviveNo').onclick=()=>{$('reviveOv').classList.remove('show');reviveResume=null;gameOver('ハートがなくなっちゃった');};
 let shake=0,winTimers=[];
 function rankName(h,ym){if(ym)return ym>1?ym+'倍役満':'役満';if(h>=11)return'三倍満';if(h>=8)return'倍満';if(h>=6)return'跳満';if(h>=5)return'満貫';return'';}
 function countUp(target){
@@ -694,6 +728,7 @@ function gameOver(reason,pre,done){
     return;
   }
   overWait=false;
+  $('reviveOv').classList.remove('show');reviveResume=null;
   let lastHand=pre===undefined?null:pre;
   if(pre===undefined&&state!=='win'){const c=boardCounts();if(c.reduce((a,b)=>a+b,0)>=14)lastHand=findBest(c);}
   document.querySelector('#overOv .gtitle').textContent=done?'完走！':'おしまい';
@@ -708,6 +743,7 @@ function gameOver(reason,pre,done){
     ${bestHand?`<br>最高の手 <b>${bestHand.yaku.filter(y=>y.n!=='門前清自摸和').map(y=>y.n).join('・')||'ツモのみ'}</b>`:''}
     ${rec&&score<=rec?`<br>自己ベスト ${rec.toLocaleString()} 点`:''}${place<=10?`<br>🏆 ランキング <b>${place}</b> 位！`:''}${debug?'<br>🀄 役満モード！なので記録されません':''}`;
   $('overOv').classList.add('show');chime([392,330,262],.18,'triangle',.12);
+  if(Ads)Ads.showBanner();
 }
 
 /* ---------- パーティクル ---------- */
@@ -744,8 +780,13 @@ let endless=false,lap=1;
 function startGame(inf){endless=inf;ac();wantTrack=0;initBGM();prepYakuman();$('startOv').classList.remove('show');newGame();}
 $('startBtn').onclick=()=>startGame(false);
 $('endlessBtn').onclick=()=>{if(!endlessUnlocked()){toast('完走すると遊べるようになるよ');chime([440,330],.06,'triangle',.08);return;}startGame(true);};
-$('againBtn').onclick=()=>{ac();prepYakuman();stage=0;newGame();setSky(0);setTrack(0);initBGM();};
-$('titleBtn').onclick=toTitle;
+// ゲームオーバーのあとに次へ進むとき、設定しだいで全画面広告をはさむ（最初は出さない設定）
+let nextBusy=false;
+async function afterOverAd(){
+  if(nextBusy)return false;if(!Ads)return true;
+  nextBusy=true;try{await Ads.maybeInterstitial();}finally{nextBusy=false;}return true;}
+$('againBtn').onclick=async()=>{if(!await afterOverAd())return;ac();prepYakuman();stage=0;newGame();setSky(0);setTrack(0);initBGM();};
+$('titleBtn').onclick=async()=>{if(!await afterOverAd())return;toTitle();};
 function showRec(){try{const r=+localStorage.getItem('ponpon-pai-best')||0,e=+localStorage.getItem('ponpon-pai-best-endless')||0;
   $('startRec').textContent=[r?`自己ベスト ${r.toLocaleString()}点`:'',e?`エンドレス ${e.toLocaleString()}点`:''].filter(Boolean).join('　');}catch(e){}}
 function demoStack(){
@@ -768,7 +809,8 @@ function toTitle(){
   for(const t of tiles.slice())removeTile(t);
   if(held){scene.remove(held.mesh);held=null;}
   state='title';best=null;choices=[];score=0;lives=3;wall=[];
-  $('overOv').classList.remove('show');$('winOv').classList.remove('show');
+  $('overOv').classList.remove('show');$('winOv').classList.remove('show');$('reviveOv').classList.remove('show');reviveResume=null;
+  if(Ads)Ads.showBanner();
   $('ctrl').innerHTML='';$('hand').innerHTML='';$('handlabel').textContent='';
   updateHud();demoStack();refreshTitle();stage=0;setSky(0);setTrack(0);
   const st=document.querySelector('.stack');st.replaceWith(st.cloneNode(true));
@@ -810,7 +852,8 @@ function loop(now){
       removeTile(t);
       if(now>graceUntil&&state!=='over'){
         lives=Math.max(0,lives-1);streak=0;updateHud();toast('落ちちゃった…','fall','ハート −1');chime([523,392],.12,'triangle',.12);
-        if(lives<=0&&state!=='falling'&&state!=='win')gameOver('ハートがなくなっちゃった');
+        if(lives<=0&&(state==='choose'||state==='aim'))heartsOut(()=>{renderHand();renderCtrl();});
+        else if(lives<=0&&state!=='falling'&&state!=='win'&&state!=='revive')gameOver('ハートがなくなっちゃった');
       }
       if(state==='choose'||state==='aim'){best=null;renderHand();if(state==='choose')renderCtrl();}
     }
@@ -880,6 +923,7 @@ async function boot(){
   buildFaces();
   demoStack();camY=settledTop;
   const sb=$('startBtn');sb.disabled=false;sb.textContent='あそぶ';$('endlessBtn').disabled=false;refreshTitle();fitTitle();setTimeout(fitTitle,300);
+  if(Ads)Ads.showBanner();
   requestAnimationFrame(loop);
 }
 

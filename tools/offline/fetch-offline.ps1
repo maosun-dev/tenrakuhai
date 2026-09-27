@@ -3,7 +3,7 @@
 #   - three.js r128 and cannon.js 0.6.2 from cdnjs  -> js/vendor/  (checked against cdnjs SRI hashes)
 #   - Google Fonts, cut down to only the characters the game uses -> assets/fonts/ + css/fonts.css
 #
-# Re-run this whenever you add new text (new characters) to index.html / js/main.js / css/style.css.
+# Re-run this whenever you add new text (new characters) to index.html / js/main.js / js/ads.js / css/style.css.
 # Usage: powershell -ExecutionPolicy Bypass -File tools\offline\fetch-offline.ps1
 $ErrorActionPreference = 'Stop'
 $root = (Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path
@@ -34,7 +34,7 @@ for ($c = 0x20; $c -le 0x7E; $c++) { [void]$set.Add($c) }
 foreach ($r in @(@(0x3000,0x303F), @(0x3041,0x3096), @(0x309B,0x309F), @(0x30A0,0x30FF), @(0xFF01,0xFF5E))) {
   for ($c = $r[0]; $c -le $r[1]; $c++) { [void]$set.Add($c) }
 }
-foreach ($f in 'index.html', 'js\main.js', 'css\style.css') {
+foreach ($f in 'index.html', 'js\main.js', 'js\ads.js', 'css\style.css') {
   $text = [IO.File]::ReadAllText((Join-Path $root $f), $utf8)
   foreach ($ch in $text.ToCharArray()) {
     $c = [int]$ch

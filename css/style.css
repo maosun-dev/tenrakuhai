@@ -199,6 +199,7 @@ button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 }
 .howrules{text-align:left;font-size:14px;line-height:1.8;margin:14px 0 18px}
 .howrules p{margin:0 0 10px;padding-left:1.6em;text-indent:-1.6em}
+.credits{margin-top:16px;font-size:10px;line-height:1.6;color:var(--ink-soft);text-align:center;opacity:.8}
 .dbg{font-size:13px;font-weight:900;color:#fff;background:linear-gradient(180deg,#ff8a3d,#d8341c);box-shadow:0 0 16px rgba(255,120,40,.6);border-radius:999px;padding:5px 14px}
 .overlay .card{animation:pop .28s cubic-bezier(.2,1.4,.4,1)}
 @keyframes pop{0%{opacity:0;transform:scale(.9)}100%{opacity:1;transform:none}}

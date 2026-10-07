@@ -15,13 +15,18 @@ on:
         description: '本物の広告を使う（ストアに出す版だけオンにする。オフならテスト広告）'
         type: boolean
         default: false
+      runner:
+        description: '組み立てに使う Mac（新しいチップの Mac は混んでいて始まらないことがある）'
+        type: choice
+        options: [macos-15-intel, macos-latest]
+        default: macos-15-intel
 
 permissions:
   contents: read
 
 jobs:
   testflight:
-    runs-on: macos-latest
+    runs-on: ${{ inputs.runner || 'macos-15-intel' }}
     timeout-minutes: 60
     env:
       TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}

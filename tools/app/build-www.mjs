@@ -8,6 +8,7 @@
 //     the secret title-tile modes (see main.js).
 //   - js/vendor/preferences.js and js/app-save.js: keeps the records in the app's own
 //     storage too, and loads main.js after restoring them.
+//   - js/gamecenter.js: the world ranking (Game Center, see ios/App/App/GameCenter.swift).
 // Usage: npm run build            (test ads)
 //        ADS_PRODUCTION=1 npm run build   (real ads)
 import { copyFileSync, cpSync, mkdirSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
@@ -35,7 +36,7 @@ const replaceTag = (marker, to) => {
   html = html.replace(marker, to);
 };
 replaceTag('<script src="js/ads.js"></script>',
-  '<script src="js/vendor/capacitor.js"></script>\n<script src="js/vendor/admob.js"></script>\n<script src="js/vendor/preferences.js"></script>\n<script src="js/ads-config.js"></script>\n<script src="js/ads.js"></script>');
+  '<script src="js/vendor/capacitor.js"></script>\n<script src="js/vendor/admob.js"></script>\n<script src="js/vendor/preferences.js"></script>\n<script src="js/ads-config.js"></script>\n<script src="js/ads.js"></script>\n<script src="js/gamecenter.js"></script>');
 replaceTag('<script src="js/main.js"></script>', '<script src="js/app-save.js"></script>');
 writeFileSync(indexPath, html);
 

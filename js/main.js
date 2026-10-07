@@ -739,6 +739,7 @@ function gameOver(reason,pre,done){
   let rec=0;const BK=endless?'ponpon-pai-best-endless':'ponpon-pai-best';try{rec=+localStorage.getItem(BK)||0;if(score>rec&&!debug)localStorage.setItem(BK,String(score));}catch(e){}
   if(score>=36000&&!debug)unlockMB();
   const place=debug?999:saveRecord();
+  if(!debug&&window.GameCenter)GameCenter.submit(endless,score);
   $('overReason').textContent=reason+(lastHand?`（台に残った役 ${lastHand.points.toLocaleString()}点も加えたよ）`:'');
   $('overStats').innerHTML=`スコア <b>${score.toLocaleString()}</b> 点${score>rec&&score>0?` ${ic('party')}自己ベスト！`:''}<br>
     和了した回数 <b>${wins}</b> 回<br>連続和了 最高 <b>${maxStreak}</b> 回<br>いちばん高いタワー <b>${(maxHeight*2.6).toFixed(1)}</b> cm
@@ -1082,6 +1083,11 @@ document.querySelectorAll('#rankOv .mtabs button').forEach(b=>b.onclick=()=>{
   rankMode=+b.dataset.m;document.querySelectorAll('#rankOv .mtabs button').forEach(x=>x.classList.toggle('on',x===b));renderRanks();});
 $('rankBtn').onclick=()=>{rankMode=endless?1:0;document.querySelectorAll('#rankOv .mtabs button').forEach(x=>x.classList.toggle('on',+x.dataset.m===rankMode));renderRanks();$('rankOv').classList.add('show');$('rankOv').scrollTop=0;};
 $('rankClose').onclick=()=>$('rankOv').classList.remove('show');
+// 世界ランキング（iPhoneアプリ版だけ。js/gamecenter.js）
+if(window.GameCenter){
+  $('gcBtn').hidden=false;$('rankNote').textContent='この一覧はこの端末の記録です';
+  $('gcBtn').onclick=async()=>{if(!await GameCenter.show(rankMode===1))toast('Game Center にサインインすると見られるよ','info','設定アプリ → Game Center');};
+}
 
 /* ---------- ミュージックボックス ---------- */
 const MBKEY='tenraku-musicbox';

@@ -313,3 +313,13 @@ button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
   #skyfx,#skyfx::after,#nightfx .stars,.eq span,.ym-rays,.ym-embers span,#ymfx.p2 .ym-stage{animation:none}
   .meteor{display:none}
 }
+
+/* アイコン（絵文字の代わり。index.html 先頭の <symbol>） */
+.ic{display:inline-block;width:1.25em;height:1.25em;vertical-align:-.27em;flex:none;overflow:visible}
+.btn>.ic,.stream>.ic,.dbg>.ic,#overStats .ic{margin-right:.32em}
+#quitBtn .ic,#music .ic,#mute .ic{width:18px;height:18px;vertical-align:middle}
+#music{color:var(--gold)}
+#hearts{display:flex;align-items:center;gap:1px;padding-top:4px;padding-bottom:4px}
+#hearts .ic{width:17px;height:17px;vertical-align:middle}
+.howrules p .ic{width:1.3em;height:1.3em;margin-right:.3em;vertical-align:-.3em}
+.rtable .ic{width:22px;height:22px;vertical-align:middle}

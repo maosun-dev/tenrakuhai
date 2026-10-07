@@ -438,6 +438,8 @@ function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random
 
 let toastTimer=0;
 const TOAST_LIFE={info:1750,gold:2050,fall:1950,rainbow:2200,star:2200};
+// index.html の先頭にあるアイコン（絵文字の代わり）
+const ic=n=>`<svg class="ic"><use href="#i-${n}"/></svg>`;
 const HEART_SVG='<svg viewBox="0 0 54 48"><path d="M27 46C12 35 2 26 2 14 2 6.5 8 1.5 15 1.5c5 0 9.5 3 12 7.5C29.5 4.5 34 1.5 39 1.5c7 0 13 5 13 12.5 0 12-10 21-25 32z" fill="#ff4f7e"/><path d="M13 8c-4 1-6 4.5-6 8" stroke="#ffd0dc" stroke-width="3.5" fill="none" stroke-linecap="round"/></svg>';
 function esc(t){return String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
 let toastType='',toastEndAt=0;
@@ -457,7 +459,7 @@ function toast(msg,type='info',sub=''){
 }
 function updateHud(){
   const se=$('score');if(se.textContent!==score.toLocaleString()){se.textContent=score.toLocaleString();se.classList.remove('bump');void se.offsetWidth;if(score>0)se.classList.add('bump');}$('wall').textContent=endless?'∞':wall.length;
-  const lv=Math.max(0,Math.min(5,lives));$('hearts').textContent='♥'.repeat(lv)+'♡'.repeat(Math.max(0,3-lv));
+  const lv=Math.max(0,Math.min(5,lives));$('hearts').innerHTML=ic('heart').repeat(lv)+ic('heart-empty').repeat(Math.max(0,3-lv));
 }
 const timg=(k,cls='')=>`<img class="t ${cls}" src="${faceURLs[k]}" alt="${kindName(k)}">`;
 function kindName(k){if(k<9)return NUMK[k]+'萬';if(k<18)return NUMK[k-9]+'筒';if(k<27)return NUMK[k-18]+'索';return HONK[k-27];}
@@ -738,10 +740,10 @@ function gameOver(reason,pre,done){
   if(score>=36000&&!debug)unlockMB();
   const place=debug?999:saveRecord();
   $('overReason').textContent=reason+(lastHand?`（台に残った役 ${lastHand.points.toLocaleString()}点も加えたよ）`:'');
-  $('overStats').innerHTML=`スコア <b>${score.toLocaleString()}</b> 点${score>rec&&score>0?' 🎉 自己ベスト！':''}<br>
+  $('overStats').innerHTML=`スコア <b>${score.toLocaleString()}</b> 点${score>rec&&score>0?` ${ic('party')}自己ベスト！`:''}<br>
     和了した回数 <b>${wins}</b> 回<br>連続和了 最高 <b>${maxStreak}</b> 回<br>いちばん高いタワー <b>${(maxHeight*2.6).toFixed(1)}</b> cm
     ${bestHand?`<br>最高の手 <b>${bestHand.yaku.filter(y=>y.n!=='門前清自摸和').map(y=>y.n).join('・')||'ツモのみ'}</b>`:''}
-    ${rec&&score<=rec?`<br>自己ベスト ${rec.toLocaleString()} 点`:''}${place<=10?`<br>🏆 ランキング <b>${place}</b> 位！`:''}${debug?'<br>🀄 役満モード！なので記録されません':''}`;
+    ${rec&&score<=rec?`<br>自己ベスト ${rec.toLocaleString()} 点`:''}${place<=10?`<br>${ic('trophy')}ランキング <b>${place}</b> 位！`:''}${debug?`<br>${ic('tile')}役満モード！なので記録されません`:''}`;
   $('overOv').classList.add('show');chime([392,330,262],.18,'triangle',.12);
   if(Ads)Ads.showBanner();
 }
@@ -773,7 +775,7 @@ window.addEventListener('keydown',e=>{
   else if(e.key===' '||e.key==='Enter'){e.preventDefault();drop();}
   else return;e.preventDefault();
 });
-$('mute').onclick=()=>{muted=!muted;$('mute').textContent=muted?'🔇':'🔊';ac();initBGM();applyMusicVol();};
+$('mute').onclick=()=>{muted=!muted;$('mute').innerHTML=ic(muted?'mute':'sound');ac();initBGM();applyMusicVol();};
 $('music').onclick=()=>{musicOn=!musicOn;$('music').classList.toggle('off',!musicOn);ac();initBGM();applyMusicVol();};
 $('startOv').addEventListener('click',()=>{ac();initBGM();});
 let endless=false,lap=1;
@@ -1064,7 +1066,7 @@ function saveRecord(){
 let rankSort='s';
 function renderRanks(){
   const list=loadRanks(rankMode).slice().sort((a,b)=>(b[rankSort]-a[rankSort])||(b.s-a.s)).slice(0,10);
-  const md=['🥇','🥈','🥉'];
+  const md=[ic('medal1'),ic('medal2'),ic('medal3')];
   if(!list.length){$('rankList').innerHTML='<p class="hint" style="margin:24px 0">まだ記録がないよ。遊んでみよう！</p>';return;}
   const f=d=>{const x=new Date(d);return`${x.getMonth()+1}/${x.getDate()}`;};
   $('rankList').innerHTML=`<div class="tw"><table class="rtable"><thead><tr><th></th><th>点数</th><th>高さ</th><th>連続</th><th>日付</th></tr></thead><tbody>${
@@ -1092,7 +1094,7 @@ function endlessUnlocked(){try{return localStorage.getItem(EKEY)==='1'||allUnloc
 function allUnlocked(){try{return localStorage.getItem(ALLKEY)==='1';}catch(e){return false;}}
 function mbUnlocked(){try{return localStorage.getItem(MBKEY)==='1'||allUnlocked();}catch(e){return false;}}
 function unlockMB(){if(mbUnlocked())return false;try{localStorage.setItem(MBKEY,'1');}catch(e){}return true;}
-function refreshTitle(){showRec();{const eb=$('endlessBtn'),u=endlessUnlocked();eb.classList.toggle('locked',!u);eb.innerHTML=u?'∞ エンドレス<small>山がなくなっても続く</small>':'🔒 エンドレス<small>完走すると解放</small>';}const b=$('mbBtn'),u=mbUnlocked();b.classList.toggle('locked',!u);b.textContent=u?'🎵 ミュージックボックス':'🔒 ミュージックボックス';}
+function refreshTitle(){showRec();{const eb=$('endlessBtn'),u=endlessUnlocked();eb.classList.toggle('locked',!u);eb.innerHTML=u?'∞ エンドレス<small>山がなくなっても続く</small>':ic('lock')+'エンドレス<small>完走すると解放</small>';}const b=$('mbBtn'),u=mbUnlocked();b.classList.toggle('locked',!u);b.innerHTML=(u?ic('music'):ic('lock'))+'ミュージックボックス';}
 function stopMusic(){
   if(!mus||curTrack<0)return;const old=mus[curTrack],t=actx.currentTime;
   old.g.gain.cancelScheduledValues(t);old.g.gain.setTargetAtTime(0,t,.3);setTimeout(()=>{if(mus[curTrack]!==old)old.el.pause();},1500);
@@ -1191,7 +1193,7 @@ $('colClose').onclick=()=>$('colOv').classList.remove('show');
 // App Store に出す版（本物の広告の版）では使えない：審査の「隠し機能」に当たらないように
 const STORE_BUILD=!!(window.ADS_CONFIG&&window.ADS_CONFIG.production);
 let debug=false,dbgSeq=0,revSeq=0,dbl=false,dblSeq=0,boom=false,boomSeq=0,boomAt=false;
-function badgeText(){return boom?'💥 爆発テストモード':dbl?'🀄 ダブル役満モード！':'🀄 役満モード！';}
+function badgeText(){return boom?ic('boom')+'爆発テストモード':dbl?ic('tile')+'ダブル役満モード！':ic('tile')+'役満モード！';}
 const REV_ORDER=['c','b','a'];
 const DBG_ORDER=['a','b','c'];
 $('startOv').addEventListener('click',e=>{
@@ -1204,22 +1206,22 @@ $('startOv').addEventListener('click',e=>{
   if(revSeq>=15){
     revSeq=0;dbgSeq=0;const on=!allUnlocked();
     try{if(on)localStorage.setItem(ALLKEY,'1');else localStorage.removeItem(ALLKEY);}catch(e){}
-    refreshTitle();toast(on?'🔓 エンドレス・ミュージックボックス・役コレクションを全解放！':'🔒 全解放 OFF');
+    refreshTitle();toast(on?'エンドレス・ミュージックボックス・役コレクションを全解放！':'全解放 OFF');
     chime(on?[523,784,1047,1568]:[1047,523],.08,'square',.06);return;
   }
   if(debug&&dbgSeq<15){
     if(k==='b'){dblSeq++;
-      if(dblSeq>=3){dblSeq=0;dbgSeq=0;dbl=!dbl;$('dbgBadge').textContent=badgeText();
-        toast(dbl?'🀄 ダブル役満モード！ ON':'ダブル役満モード！ OFF');chime(dbl?[660,880,1320,1760]:[1320,880],.08,'square',.06);return;}
+      if(dblSeq>=3){dblSeq=0;dbgSeq=0;dbl=!dbl;$('dbgBadge').innerHTML=badgeText();
+        toast(dbl?'ダブル役満モード！ ON':'ダブル役満モード！ OFF');chime(dbl?[660,880,1320,1760]:[1320,880],.08,'square',.06);return;}
     }else dblSeq=0;
     if(k==='c'){boomSeq++;
-      if(boomSeq>=3){boomSeq=0;dbgSeq=0;boom=!boom;$('dbgBadge').textContent=badgeText();
-        toast(boom?'💥 爆発テストモード ON':'爆発テストモード OFF');chime(boom?[330,220,165,110]:[440,660],.08,'sawtooth',.06);return;}
+      if(boomSeq>=3){boomSeq=0;dbgSeq=0;boom=!boom;$('dbgBadge').innerHTML=badgeText();
+        toast(boom?'爆発テストモード ON':'爆発テストモード OFF');chime(boom?[330,220,165,110]:[440,660],.08,'sawtooth',.06);return;}
     }else boomSeq=0;
   }
   if(dbgSeq>=15){
-    dbgSeq=0;dblSeq=0;debug=!debug;$('dbgBadge').hidden=!debug;if(!debug){dbl=false;boom=false;}$('dbgBadge').textContent=badgeText();
-    toast(debug?'🀄 役満モード！ ON':'役満モード！ OFF');chime(debug?[660,880,1320]:[880,660],.08,'square',.06);
+    dbgSeq=0;dblSeq=0;debug=!debug;$('dbgBadge').hidden=!debug;if(!debug){dbl=false;boom=false;}$('dbgBadge').innerHTML=badgeText();
+    toast(debug?'役満モード！ ON':'役満モード！ OFF');chime(debug?[660,880,1320]:[880,660],.08,'square',.06);
   }
 });
 function addTileAt(k,x,y,z){
@@ -1236,7 +1238,7 @@ function boomSetup(){
   for(let l=0;l<5;l++)for(const [x,z] of spots){if(l>=3&&Math.abs(x)>1.3)continue;const y=TH/2+.01+l*(TH+.004);addTileAt(wall.pop(),x,y,z);top=Math.max(top,y+TH/2);}
   for(let l=5;l<9;l++){const y=TH/2+.01+l*(TH+.004);addTileAt(wall.pop(),0,y,0);top=Math.max(top,y+TH/2);}
   wall=[];choices=[];settledTop=top;graceUntil=Infinity;boomAt=true;
-  setTimeout(()=>toast('💥 爆発テスト！ まもなく完走'),300);
+  setTimeout(()=>toast('爆発テスト！ まもなく完走'),300);
 }
 function debugSetup(){
   if(boom){boomSetup();return;}
@@ -1254,7 +1256,7 @@ function debugSetup(){
   const used=kinds.concat([33,33]);
   for(const k of used){const i=wall.indexOf(k);if(i>=0)wall.splice(i,1);}
   choices=[33,33];settledTop=TH;
-  setTimeout(()=>toast(dbl?'🀄 ダブル役満！ 中を落とすと大三元・四暗刻':'🀄 役満モード！ 中を落とすと大三元'),400);
+  setTimeout(()=>toast(dbl?'ダブル役満！ 中を落とすと大三元・四暗刻':'役満モード！ 中を落とすと大三元'),400);
 }
 
 $('quitBtn').onclick=()=>{

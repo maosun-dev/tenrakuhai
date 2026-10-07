@@ -30,6 +30,29 @@
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+<!-- アイコン（絵文字の代わり。どの端末でも同じ見た目になるように描いたもの）。使い方：<svg class="ic"><use href="#i-名前"/></svg>（js/main.js の ic()） -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-pause" viewBox="0 0 24 24"><rect x="6" y="5" width="4" height="14" rx="1.6" fill="currentColor"/><rect x="14" y="5" width="4" height="14" rx="1.6" fill="currentColor"/></symbol>
+  <symbol id="i-music" viewBox="0 0 24 24"><path d="M9 17.6V6.3l10-2.4v11.5" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linejoin="round"/><path d="M9 9.2l10-2.4" stroke="currentColor" stroke-width="2.2"/><ellipse cx="6.4" cy="17.7" rx="3.2" ry="2.6" fill="currentColor"/><ellipse cx="16.4" cy="15.5" rx="3.2" ry="2.6" fill="currentColor"/></symbol>
+  <symbol id="i-sound" viewBox="0 0 24 24"><path d="M3.5 9.3h3.6L12 5.2v13.6l-4.9-4.1H3.5z" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linejoin="round"/><path d="M15.4 9a4.2 4.2 0 0 1 0 6M18 6.4a7.8 7.8 0 0 1 0 11.2" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></symbol>
+  <symbol id="i-mute" viewBox="0 0 24 24"><path d="M3.5 9.3h3.6L12 5.2v13.6l-4.9-4.1H3.5z" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linejoin="round"/><path d="M15.5 9.5l5 5M20.5 9.5l-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-book" viewBox="0 0 24 24"><path d="M2.8 5.6c3.2-1.3 6.3-1 9.2 1v13c-2.9-2-6-2.3-9.2-1z" fill="#fff4e6"/><path d="M21.2 5.6c-3.2-1.3-6.3-1-9.2 1v13c2.9-2 6-2.3 9.2-1z" fill="#ffe2b0"/><path d="M5.2 9.4c1.6-.4 3.2-.2 4.6.5M5.2 12.4c1.6-.4 3.2-.2 4.6.5M5.2 15.4c1.6-.4 3.2-.2 4.6.5M14.2 9.9c1.4-.7 3-.9 4.6-.5M14.2 12.9c1.4-.7 3-.9 4.6-.5" stroke="#b49ad6" stroke-width="1.1" stroke-linecap="round" fill="none"/><path d="M12 6.6v13" stroke="#f4b54a" stroke-width="1.4"/></symbol>
+  <symbol id="i-trophy" viewBox="0 0 24 24"><path d="M7 6.2H4.6a2.6 2.6 0 0 0 2.8 4.2M17 6.2h2.4a2.6 2.6 0 0 1-2.8 4.2" stroke="#f4b54a" stroke-width="1.8" fill="none" stroke-linecap="round"/><path d="M6.8 3.5h10.4v5.6a5.2 5.2 0 0 1-10.4 0z" fill="#ffd27a"/><path d="M9.2 5.5v3.2" stroke="#fff3c0" stroke-width="1.6" stroke-linecap="round"/><rect x="10.8" y="14" width="2.4" height="3.4" fill="#f4b54a"/><rect x="7.4" y="17.2" width="9.2" height="3.3" rx="1.2" fill="#c98a2c"/></symbol>
+  <symbol id="i-tile" viewBox="0 0 24 24"><rect x="5.5" y="2.5" width="13" height="19" rx="2.6" fill="#fffdf6"/><path d="M5.5 17.4h13v1.5a2.6 2.6 0 0 1-2.6 2.6H8.1a2.6 2.6 0 0 1-2.6-2.6z" fill="#7cc9ae"/><rect x="8.4" y="7.4" width="7.2" height="4.4" rx=".8" fill="none" stroke="#d6283a" stroke-width="1.6"/><rect x="11.2" y="5" width="1.6" height="10.2" rx=".6" fill="#d6283a"/></symbol>
+  <symbol id="i-tiles" viewBox="0 0 24 24"><g transform="rotate(-12 8 12)"><rect x="2.6" y="4.4" width="10" height="14.6" rx="2" fill="#f1e6d2"/><path d="M2.6 16.2h10v.8a2 2 0 0 1-2 2h-6a2 2 0 0 1-2-2z" fill="#5fae93"/><circle cx="7.6" cy="10.4" r="2.4" fill="none" stroke="#2f8a63" stroke-width="1.4"/></g><rect x="10.4" y="4" width="10.6" height="15.6" rx="2.2" fill="#fffdf6"/><path d="M10.4 16.6h10.6v.8a2.2 2.2 0 0 1-2.2 2.2h-6.2a2.2 2.2 0 0 1-2.2-2.2z" fill="#7cc9ae"/><rect x="12.6" y="8" width="6.2" height="3.6" rx=".7" fill="none" stroke="#d6283a" stroke-width="1.4"/><rect x="15" y="6.1" width="1.4" height="8.4" rx=".5" fill="#d6283a"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><path d="M8 10.6V8a4 4 0 0 1 8 0v2.6" stroke="#cdbbe2" stroke-width="2.4" fill="none"/><rect x="5" y="10.4" width="14" height="10.2" rx="2.6" fill="#ffd27a"/><circle cx="12" cy="14.6" r="1.6" fill="#8a5a1c"/><rect x="11.3" y="15" width="1.4" height="3.2" rx=".6" fill="#8a5a1c"/></symbol>
+  <symbol id="i-pointer" viewBox="0 0 24 24"><path d="M9.6 13.2V4.9a1.7 1.7 0 0 1 3.4 0v5.9l4.4.8c1.5.3 2.4 1.7 2.2 3.2l-.7 4.4a2.5 2.5 0 0 1-2.5 2.1h-4.9a2.5 2.5 0 0 1-2-1l-3.6-4.5a1.6 1.6 0 0 1 2.3-2.2z" fill="#ffe2c4" stroke="#c9875a" stroke-width="1.2" stroke-linejoin="round"/><path d="M13 12.2v3M16 12.8v2.6" stroke="#e0a983" stroke-width="1.1" stroke-linecap="round"/></symbol>
+  <symbol id="i-sparkle" viewBox="0 0 24 24"><path d="M10 2.5l1.9 5.6 5.6 1.9-5.6 1.9L10 17.5l-1.9-5.6L2.5 10l5.6-1.9z" fill="#ffd27a"/><path d="M18 13l.9 2.5 2.5.9-2.5.9-.9 2.5-.9-2.5-2.5-.9 2.5-.9z" fill="#fff3c0"/><path d="M18.6 2.8l.6 1.6 1.6.6-1.6.6-.6 1.6-.6-1.6-1.6-.6 1.6-.6z" fill="#ff9fc0"/></symbol>
+  <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 21C5.6 16.4 1.6 12.7 1.6 7.9 1.6 4.7 4.1 2.6 7.1 2.6c2.2 0 3.9 1.3 4.9 3.1 1-1.8 2.7-3.1 4.9-3.1 3 0 5.5 2.1 5.5 5.3 0 4.8-4 8.5-10.4 13.1z" fill="#ff4f7e"/><path d="M5.6 5.4C4.3 6 3.6 7.2 3.6 8.6" stroke="#ffd0dc" stroke-width="1.6" fill="none" stroke-linecap="round"/></symbol>
+  <symbol id="i-heart-empty" viewBox="0 0 24 24"><path d="M12 19.8C6 15.5 2.6 12.2 2.6 8 2.6 5.2 4.7 3.6 7.1 3.6c2 0 3.8 1.3 4.9 3.3 1.1-2 2.9-3.3 4.9-3.3 2.4 0 4.5 1.6 4.5 4.4 0 4.2-3.4 7.5-9.4 11.8z" fill="rgba(255,79,126,.12)" stroke="#ff8fb6" stroke-width="1.6" stroke-linejoin="round"/></symbol>
+  <symbol id="i-heartbreak" viewBox="0 0 24 24"><path d="M12 21C5.6 16.4 1.6 12.7 1.6 7.9 1.6 4.7 4.1 2.6 7.1 2.6c2.2 0 3.9 1.3 4.9 3.1 1-1.8 2.7-3.1 4.9-3.1 3 0 5.5 2.1 5.5 5.3 0 4.8-4 8.5-10.4 13.1z" fill="#ff4f7e"/><path d="M12.3 5.6l-1.8 3.8 2.8 2.3-2.2 3.4 1.1 2.2" stroke="#2a1d52" stroke-width="1.7" fill="none" stroke-linejoin="round" stroke-linecap="round"/></symbol>
+  <symbol id="i-headphones" viewBox="0 0 24 24"><path d="M4 15.5V12a8 8 0 0 1 16 0v3.5" stroke="#cdbbe2" stroke-width="2.2" fill="none" stroke-linecap="round"/><rect x="2.6" y="13.2" width="5.4" height="7.6" rx="2.2" fill="#ff7aa2"/><rect x="16" y="13.2" width="5.4" height="7.6" rx="2.2" fill="#ff7aa2"/></symbol>
+  <symbol id="i-party" viewBox="0 0 24 24"><path d="M3.2 20.8l4.4-12 7.6 7.6z" fill="#ffd27a"/><path d="M5 16.4l2.6 2.6M6.4 12.6l5 5" stroke="#ff7aa2" stroke-width="1.6"/><circle cx="15.4" cy="4.6" r="1.4" fill="#7cc9ae"/><circle cx="20.2" cy="10" r="1.4" fill="#ff7aa2"/><path d="M11.6 3.2l.9 2.5M19.4 3.6l-1.7 2.1M21 14.6l-2.5-.6" stroke="#ffd27a" stroke-width="1.6" stroke-linecap="round"/><path d="M10.6 8.6c1.1-1.6 2.6-1.2 3.4-2.8M14.6 11.2c1.6-.8 2.9.1 4.3-.9" stroke="#b18cff" stroke-width="1.6" fill="none" stroke-linecap="round"/></symbol>
+  <symbol id="i-medal1" viewBox="0 0 24 24"><path d="M6.6 1.8h4.2l2 6.2H8.6z" fill="#ff7aa2"/><path d="M17.4 1.8h-4.2l-2 6.2h4.2z" fill="#6bc8ff"/><circle cx="12" cy="14.6" r="7.2" fill="#ffd27a"/><circle cx="12" cy="14.6" r="5.3" fill="none" stroke="#fff3c0" stroke-width="1.2"/><text x="12" y="17.9" text-anchor="middle" font-size="9" fill="#8a5a1c" font-family="Dela Gothic One,sans-serif">1</text></symbol>
+  <symbol id="i-medal2" viewBox="0 0 24 24"><path d="M6.6 1.8h4.2l2 6.2H8.6z" fill="#ff7aa2"/><path d="M17.4 1.8h-4.2l-2 6.2h4.2z" fill="#6bc8ff"/><circle cx="12" cy="14.6" r="7.2" fill="#d9dde8"/><circle cx="12" cy="14.6" r="5.3" fill="none" stroke="#ffffff" stroke-width="1.2"/><text x="12" y="17.9" text-anchor="middle" font-size="9" fill="#5b6274" font-family="Dela Gothic One,sans-serif">2</text></symbol>
+  <symbol id="i-medal3" viewBox="0 0 24 24"><path d="M6.6 1.8h4.2l2 6.2H8.6z" fill="#ff7aa2"/><path d="M17.4 1.8h-4.2l-2 6.2h4.2z" fill="#6bc8ff"/><circle cx="12" cy="14.6" r="7.2" fill="#e0a070"/><circle cx="12" cy="14.6" r="5.3" fill="none" stroke="#ffd9b8" stroke-width="1.2"/><text x="12" y="17.9" text-anchor="middle" font-size="9" fill="#6e3b17" font-family="Dela Gothic One,sans-serif">3</text></symbol>
+  <symbol id="i-boom" viewBox="0 0 24 24"><path d="M12 1.5l2.2 5.4 5.2-2.6-2 5.4 5.1 2.3-5.1 2.3 2 5.4-5.2-2.6L12 22.5l-2.2-5.4-5.2 2.6 2-5.4-5.1-2.3 5.1-2.3-2-5.4 5.2 2.6z" fill="#ff8a3d"/><path d="M12 6.5l1.3 3.2 3.2-1.3-1.3 3.2 3.2 1.4-3.2 1.4 1.3 3.2-3.2-1.3L12 19.5l-1.3-3.2-3.2 1.3 1.3-3.2-3.2-1.4 3.2-1.4-1.3-3.2 3.2 1.3z" fill="#ffe66b"/></symbol>
+</svg>
 <div id="app">
   <div id="nightfx"><div class="stars"></div></div>
   <div id="skyfx"><div class="dusk"></div><canvas id="aurora"></canvas></div>
@@ -37,10 +60,10 @@
   <div id="hud">
     <div class="pill"><b id="score">0</b> 点</div>
     <div class="pill">山 <b id="wall">136</b></div>
-    <div class="pill" id="hearts">♥♥♥</div>
-    <button class="pill" id="quitBtn" aria-label="ゲームをやめる" style="pointer-events:auto;margin-left:auto">⏸</button>
-    <button class="pill" id="music" aria-label="音楽のオンオフ" style="pointer-events:auto">🎵</button>
-    <button class="pill" id="mute" aria-label="効果音のオンオフ">🔊</button>
+    <div class="pill" id="hearts"><svg class="ic"><use href="#i-heart"/></svg><svg class="ic"><use href="#i-heart"/></svg><svg class="ic"><use href="#i-heart"/></svg></div>
+    <button class="pill" id="quitBtn" aria-label="ゲームをやめる" style="pointer-events:auto;margin-left:auto"><svg class="ic"><use href="#i-pause"/></svg></button>
+    <button class="pill" id="music" aria-label="音楽のオンオフ" style="pointer-events:auto"><svg class="ic"><use href="#i-music"/></svg></button>
+    <button class="pill" id="mute" aria-label="効果音のオンオフ"><svg class="ic"><use href="#i-sound"/></svg></button>
   </div>
   <div id="toast"></div>
   <div id="bottom">
@@ -65,9 +88,9 @@
         </div>
       </div>
       <div class="modebtns"><button class="startbtn" id="startBtn" disabled>じゅんび中…</button><button class="btn endbtn" id="endlessBtn" disabled>∞ エンドレス<small>山がなくなっても続く</small></button></div>
-      <div class="row2"><button class="btn" id="howBtn">📖 あそびかた</button><button class="btn" id="rankBtn">🏆 ランキング</button></div>
-      <div class="row2"><button class="btn" id="colBtn">📚 役コレクション</button><button class="btn locked" id="mbBtn">🔒 ミュージックボックス</button></div>
-      <div class="dbg" id="dbgBadge" hidden>🀄 役満モード！</div>
+      <div class="row2"><button class="btn" id="howBtn"><svg class="ic"><use href="#i-book"/></svg>あそびかた</button><button class="btn" id="rankBtn"><svg class="ic"><use href="#i-trophy"/></svg>ランキング</button></div>
+      <div class="row2"><button class="btn" id="colBtn"><svg class="ic"><use href="#i-tiles"/></svg>役コレクション</button><button class="btn locked" id="mbBtn"><svg class="ic"><use href="#i-lock"/></svg>ミュージックボックス</button></div>
+      <div class="dbg" id="dbgBadge" hidden><svg class="ic"><use href="#i-tile"/></svg>役満モード！</div>
 
       <div class="rec" id="startRec"></div>
     </div>
@@ -103,10 +126,10 @@
     <div class="card">
       <div class="gtitle" style="font-size:32px">あそびかた</div>
       <div class="howrules">
-        <p>🀄 2枚から好きな牌を選んで、上から落として積もう。</p>
-        <p>👆 ドラッグで位置を決めて、指をはなすと落ちる。ピンクの四角が着地点。</p>
-        <p>✨ 台の上の牌で役ができたら「ツモ！」を押して点数ゲット。使った牌は消えるよ。</p>
-        <p>💔 牌が台から落ちるとハートが減る。3つなくなるか、山がなくなったらおしまい。</p>
+        <p><svg class="ic"><use href="#i-tile"/></svg>2枚から好きな牌を選んで、上から落として積もう。</p>
+        <p><svg class="ic"><use href="#i-pointer"/></svg>ドラッグで位置を決めて、指をはなすと落ちる。ピンクの四角が着地点。</p>
+        <p><svg class="ic"><use href="#i-sparkle"/></svg>台の上の牌で役ができたら「ツモ！」を押して点数ゲット。使った牌は消えるよ。</p>
+        <p><svg class="ic"><use href="#i-heartbreak"/></svg>牌が台から落ちるとハートが減る。3つなくなるか、山がなくなったらおしまい。</p>
       </div>
       <button class="btn primary" id="howClose" style="width:100%">とじる</button>
       <div class="credits">効果音の一部：「パチンコ牙狼アーカイブ」（株式会社サンセイアールアンドディ）のフリー素材<br>CR牙狼GOLDSTORM翔　ガロ保留音（赤）・P.F.O.G.出現音・牙狼剣押下成功音</div>
@@ -150,7 +173,7 @@
     <div class="card">
       <div class="gtitle" style="font-size:28px">ミュージックボックス</div>
       <div id="mbList" style="margin:14px 0"></div>
-      <p class="stream">🎧 Apple Music・Spotifyで配信中！<br><a href="https://music.apple.com/jp/album/6816609887" target="_blank" rel="noopener">アルバム「転落牌」を Apple Music で開く</a></p>
+      <p class="stream"><svg class="ic"><use href="#i-headphones"/></svg>Apple Music・Spotifyで配信中！<br><a href="https://music.apple.com/jp/album/6816609887" target="_blank" rel="noopener">アルバム「転落牌」を Apple Music で開く</a></p>
       <button class="btn primary" id="mbClose" style="width:100%">とじる</button>
     </div>
   </div>

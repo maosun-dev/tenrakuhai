@@ -468,8 +468,8 @@ function renderHand(){
   let h='';for(let k=0;k<34;k++)for(let i=0;i<c[k];i++){h+=timg(k,used[k]>0?'used':'');if(used[k]>0)used[k]--;}
   $('hand').innerHTML=h;
   const lb=$('handlabel');
-  if(best){lb.className='win';lb.textContent=`和了れる！ ${best.yaku.map(y=>y.n).join('・')}`;}
-  else{lb.className='';lb.textContent=n<14?`台の上の牌 ${n}枚（14枚から和了のチャンス）`:`台の上の牌 ${n}枚`;}
+  if(best){lb.className='win';lb.innerHTML=`<span class="tag">和了れる！</span>${best.yaku.map(y=>y.n).join('・')}`;}
+  else{lb.className='';lb.innerHTML=`<span class="tag">台の上</span><b>${n}</b>枚${n<14?'<small>14枚から和了のチャンス</small>':''}`;}
 }
 // 選べる牌それぞれについて「積めば和了れるか（すでに和了れるなら点数が上がるか）」を調べる
 let pickWinKey='',pickWinVal=[];
@@ -502,7 +502,7 @@ function renderCtrl(){
     h=`<div class="hint">ドラッグで動かして、指をはなすと落ちるよ</div>
       <div class="row"><button class="btn" id="bRot">⟲ まわす</button><button class="btn" id="bStand">${held&&isStanding(held)?'↓ 寝かせる':'↑ 立てる'}</button></div>`;
   }else if(state==='falling'){
-    h=`<div class="hint wait">ゆら…ゆら…</div>`;
+    h=`<div class="hint settle"><span class="dots"><i></i><i></i><i></i></span>牌が止まるまで ちょっと待ってね</div>`;
   }
   el.innerHTML=h;
   el.querySelectorAll('.pick').forEach(b=>b.onclick=()=>pick(+b.dataset.i));
@@ -850,8 +850,8 @@ function loop(now){
       if(k===0){burst(t.mesh.position,6);removeTile(t);for(const o of tiles)o.body.wakeUp();}
     }else if(t.body.position.y<-7){
       removeTile(t);
-      if(now>graceUntil&&state!=='over'){
-        lives=Math.max(0,lives-1);streak=0;updateHud();toast('落ちちゃった…','fall','ハート −1');chime([523,392],.12,'triangle',.12);
+      if(now>graceUntil&&state!=='over'&&lives>0){   // ハートが0のあとに落ちた牌では「落ちちゃった」を重ねない
+        lives--;streak=0;updateHud();toast('落ちちゃった…','fall','ハート −1');chime([523,392],.12,'triangle',.12);
         if(lives<=0&&(state==='choose'||state==='aim'))heartsOut(()=>{renderHand();renderCtrl();});
         else if(lives<=0&&state!=='falling'&&state!=='win'&&state!=='revive')gameOver('ハートがなくなっちゃった');
       }
@@ -1083,7 +1083,9 @@ $('rankClose').onclick=()=>$('rankOv').classList.remove('show');
 
 /* ---------- ミュージックボックス ---------- */
 const MBKEY='tenraku-musicbox';
-const TRACK_INFO=[['Sakura Drift','タイトル・0〜11,999点'],['星屑ランナー','12,000〜35,999点'],['Beyond the clouds','36,000点〜']];
+// [曲名, 流れる場面, Apple Music の曲ID]（アルバム「転落牌 - Single」）
+const TRACK_INFO=[['Sakura Drift','タイトル・0〜11,999点','6816609888'],['星屑ランナー','12,000〜35,999点','6816609889'],['Beyond the clouds','36,000点〜','6816609890']];
+const AM_ALBUM='https://music.apple.com/jp/album/6816609887';
 const ALLKEY='tenraku-all';
 const EKEY='tenraku-endless';
 function endlessUnlocked(){try{return localStorage.getItem(EKEY)==='1'||allUnlocked();}catch(e){return false;}}
@@ -1097,9 +1099,10 @@ function stopMusic(){
   curTrack=-1;
 }
 function renderMB(){
-  $('mbList').innerHTML=TRACK_INFO.map(([t,s],i)=>{const on=curTrack===i;
+  $('mbList').innerHTML=TRACK_INFO.map(([t,s,am],i)=>{const on=curTrack===i;
     return`<div class="mb"><button class="pl" data-i="${i}" aria-label="${t}を${on?'停止':'再生'}">${on?'■':'▶'}</button>
-      <div><div class="nm">${t}${on?'<span class="eq"><span></span><span></span><span></span></span>':''}</div><div class="sb">${s}</div></div></div>`;}).join('');
+      <div class="mbt"><div class="nm">${t}${on?'<span class="eq"><span></span><span></span><span></span></span>':''}</div><div class="sb">${s}</div></div>
+      <a class="am" href="${AM_ALBUM}?i=${am}" target="_blank" rel="noopener" aria-label="${t}をApple Musicで聴く">♪ Apple Music</a></div>`;}).join('');
   $('mbList').querySelectorAll('.pl').forEach(b=>b.onclick=()=>{
     const i=+b.dataset.i;ac();initBGM();
     if(curTrack===i)stopMusic();

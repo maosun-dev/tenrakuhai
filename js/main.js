@@ -1185,11 +1185,14 @@ $('colBtn').onclick=()=>{renderCol();$('colOv').classList.add('show');$('colOv')
 $('colClose').onclick=()=>$('colOv').classList.remove('show');
 
 /* ---------- 役満モード！（転→落→牌 を5回） ---------- */
+// App Store に出す版（本物の広告の版）では使えない：審査の「隠し機能」に当たらないように
+const STORE_BUILD=!!(window.ADS_CONFIG&&window.ADS_CONFIG.production);
 let debug=false,dbgSeq=0,revSeq=0,dbl=false,dblSeq=0,boom=false,boomSeq=0,boomAt=false;
 function badgeText(){return boom?'💥 爆発テストモード':dbl?'🀄 ダブル役満モード！':'🀄 役満モード！';}
 const REV_ORDER=['c','b','a'];
 const DBG_ORDER=['a','b','c'];
 $('startOv').addEventListener('click',e=>{
+  if(STORE_BUILD)return;
   const t=e.target.closest('.ht');if(!t)return;
   const k=t.classList.contains('a')?'a':t.classList.contains('b')?'b':'c';
   t.animate([{filter:'brightness(1.3)'},{filter:'none'}],{duration:250});

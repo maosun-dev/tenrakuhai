@@ -319,7 +319,11 @@ button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 .btn>.ic,.stream>.ic,.dbg>.ic,#overStats .ic{margin-right:.32em}
 #quitBtn .ic,#music .ic,#mute .ic{width:18px;height:18px;vertical-align:middle}
 #music{color:var(--gold)}
+#hearts{gap:2px}
 #hearts{display:flex;align-items:center;gap:1px;padding-top:4px;padding-bottom:4px}
 #hearts .ic{width:17px;height:17px;vertical-align:middle}
 .howrules p .ic{width:1.3em;height:1.3em;margin-right:.3em;vertical-align:-.3em}
 .rtable .ic{width:22px;height:22px;vertical-align:middle}
+.row2 .btn>.ic,.endbtn>.ic{width:21px;height:21px;vertical-align:-5px}
+#quitBtn .ic,#music .ic,#mute .ic{width:20px;height:20px}
+#hearts .ic{width:19px;height:19px}

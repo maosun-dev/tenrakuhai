@@ -291,7 +291,7 @@ button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 .yk{position:relative;display:flex;justify-content:space-between;align-items:baseline;padding:6px 10px;overflow:hidden;
   border-bottom:1px solid rgba(255,214,140,.25);opacity:0;animation:yin .55s cubic-bezier(.2,.9,.3,1) var(--d) forwards}
 .yk .yn{font-family:var(--brush);font-size:32px;color:#fff;text-shadow:0 0 10px rgba(255,140,190,.9),0 0 26px rgba(255,120,170,.5)}
-.yk .yh{font-family:var(--disp);font-size:17px;color:var(--gold)}
+.yk .yh{font-family:"Zen Maru Gothic",sans-serif;font-weight:900;font-size:17px;color:var(--gold)}
 .yk::after{content:"";position:absolute;top:0;bottom:0;left:-50%;width:40%;background:linear-gradient(90deg,transparent,rgba(255,244,210,.85),transparent);transform:skewX(-20deg);animation:streak .7s ease-out var(--d) both}
 @keyframes yin{0%{opacity:0;transform:translateX(-36px);letter-spacing:.4em;filter:blur(4px)}100%{opacity:1;transform:none;letter-spacing:.02em;filter:none}}
 @keyframes streak{0%{left:-50%}100%{left:130%}}
@@ -337,7 +337,7 @@ button.ci{font:inherit;color:inherit;cursor:pointer;width:100%}
 .colinfo.on{border-style:solid;border-color:rgba(255,210,130,.55);background:rgba(255,210,130,.07);color:var(--ink);text-align:left}
 .colinfo .cin{display:flex;justify-content:space-between;align-items:baseline}
 .colinfo .cin b{font-family:var(--brush);font-weight:400;font-size:22px;color:var(--gold)}
-.colinfo .cin span{font-family:var(--disp);font-size:14px;color:var(--gold)}
+.colinfo .cin span{font-weight:900;font-size:14px;color:var(--gold)}
 .colinfo p{margin:6px 0 8px;line-height:1.6}
 .colinfo .cex{display:flex;flex-wrap:wrap;gap:6px}
 .colinfo .cex span{display:flex;gap:1px}

@@ -393,18 +393,24 @@ function scoreHand(dec){
     for(let s=0;s<3;s++)if(cc[s*9]&&cc[s*9+3]&&cc[s*9+6]){add('一気通貫',2);break;}
     if(chows.length&&groups.every(g=>g.some(isTY)))add(hasHonor?'混全帯么九':'純全帯么九',hasHonor?2:3);
     if(!chows.length&&list.every(isTY))add('混老頭',2);
-    if(chows.length===4&&!isDragon(dec.pair)&&dec.pair!==27)add('平和',1);
+    if(chows.length===4&&!isDragon(dec.pair)&&dec.pair!==27&&ryanmen(chows,dec.win,list))add('平和',1);
   }
   const han=Y.reduce((a,y)=>a+y.h,0);
   if(han>=13)return{yaku:Y,han,yakuman:1,kazoe:true,points:32000,tiles:list,groups};
   return{yaku:Y,han,yakuman:0,points:ptsOf(han),tiles:list,groups};
 }
-function findBest(cnt){
+// 平和は両面待ちで和了ったときだけ。和了牌（最後に積んだ牌）が順子の端に入り、ペンチャン（12に3・89に7）でないこと
+function ryanmen(chows,w,list){
+  if(w==null||!list.includes(w))return true;   // 和了牌がわからない・手に使っていないときは制限しない
+  return chows.some(m=>(w===m.t&&m.t%9!==6)||(w===m.t+2&&m.t%9!==0));
+}
+// win：和了牌の種類（平和の待ちの判定に使う）
+function findBest(cnt,win){
   const c=cnt.slice();let best=null,evals=0;const melds=[];let pairK=0;
   const consider=dec=>{const r=scoreHand(dec);if(!best||r.points>best.points||(r.points===best.points&&r.han>best.han))best=r;};
   function rec(start){
     if(evals>60000)return;
-    if(melds.length===4){evals++;consider({pair:pairK,melds:melds.slice()});return;}
+    if(melds.length===4){evals++;consider({pair:pairK,melds:melds.slice(),win});return;}
     for(let i=start;i<CANDS.length;i++){
       const m=CANDS[i],t=m.t;
       if(m.p){if(c[t]>=3){c[t]-=3;melds.push(m);rec(i+1);melds.pop();c[t]+=3;}}
@@ -427,6 +433,9 @@ let state='title',score=0,lives=3,wall=[],choices=[],tiles=[],held=null,best=nul
 let wins=0,bestHand=null,maxHeight=0,graceUntil=0,fallT=0,calmT=0,settledTop=0,camY=0,drag=null;
 const parts=[];
 
+// 和了牌＝台の上でいちばん最後に積んだ牌
+let dropSeq=0;
+function winKind(){let w=null,s=0;for(const t of tiles)if(!t.removing&&t.body.position.y>-0.6&&(t.seq||0)>s){s=t.seq;w=t.kind;}return w;}
 function boardCounts(){const c=Array(34).fill(0);for(const t of tiles)if(!t.removing&&t.body.position.y>-0.6)c[t.kind]++;return c;}
 function towerTop(){
   let m=0;
@@ -482,7 +491,7 @@ function pickWins(){
   pickWinKey=key;
   pickWinVal=choices.map(k=>{
     if(n+1<14)return null;
-    c[k]++;const r=findBest(c);c[k]--;
+    c[k]++;const r=findBest(c,k);c[k]--;
     if(!r)return null;
     if(best&&r.points<=best.points)return null;
     return r;
@@ -588,7 +597,7 @@ function drop(){
   b.linearDamping=.05;b.angularDamping=.15;b.allowSleep=true;b.sleepSpeedLimit=.1;b.sleepTimeLimit=.5;
   b.addEventListener('collide',e=>{const v=Math.abs(e.contact.getImpactVelocityAlongNormal());if(v>1.2)clack(Math.min(1,v/8));});
   world.addBody(b);
-  tiles.push({kind:held.kind,body:b,mesh:m,removing:false});
+  tiles.push({kind:held.kind,body:b,mesh:m,removing:false,seq:++dropSeq});
   held=null;beam.visible=false;state='falling';fallT=0;calmT=0;renderCtrl();
 }
 function onSettled(){
@@ -599,7 +608,7 @@ function onSettled(){
   afterSettled();
 }
 function afterSettled(){
-  const had=!!best,c=boardCounts();best=c.reduce((a,b)=>a+b,0)>=14?findBest(c):null;
+  const had=!!best,c=boardCounts();best=c.reduce((a,b)=>a+b,0)>=14?findBest(c,winKind()):null;
   if(best&&!had){chime([988,1319],.09,'sine',.1);toast('役ができた！','gold');}
   toChoose();
 }
@@ -697,7 +706,7 @@ function finishRun(){
   const gid=gameId;let unl=false;
   if(!debug&&!endlessUnlocked()){try{localStorage.setItem(EKEY,'1');}catch(e){}unl=true;}
   const c=boardCounts();
-  const pre=(state!=='win'&&c.reduce((a,b)=>a+b,0)>=14)?findBest(c):null;
+  const pre=(state!=='win'&&c.reduce((a,b)=>a+b,0)>=14)?findBest(c,winKind()):null;
   state='ending';choices=[];graceUntil=Infinity;
   if(held){scene.remove(held.mesh);held=null;}beam.visible=false;mark.visible=false;renderCtrl();
   score+=8000;updateHud();
@@ -732,7 +741,7 @@ function gameOver(reason,pre,done){
   overWait=false;
   $('reviveOv').classList.remove('show');reviveResume=null;
   let lastHand=pre===undefined?null:pre;
-  if(pre===undefined&&state!=='win'){const c=boardCounts();if(c.reduce((a,b)=>a+b,0)>=14)lastHand=findBest(c);}
+  if(pre===undefined&&state!=='win'){const c=boardCounts();if(c.reduce((a,b)=>a+b,0)>=14)lastHand=findBest(c,winKind());}
   document.querySelector('#overOv .gtitle').textContent=done?'完走！':'おしまい';
   if(lastHand){addCollection(lastHand);score+=lastHand.points;wins++;streak++;maxStreak=Math.max(maxStreak,streak);if(!bestHand||lastHand.points>bestHand.points)bestHand=lastHand;updateHud();}
   state='over';if(held){scene.remove(held.mesh);held=null;}beam.visible=false;mark.visible=false;

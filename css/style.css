@@ -327,3 +327,41 @@ button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 .row2 .btn>.ic,.endbtn>.ic{width:21px;height:21px;vertical-align:-5px}
 #quitBtn .ic,#music .ic,#mute .ic{width:20px;height:20px}
 #hearts .ic{width:19px;height:19px}
+
+/* 役の説明（和了画面・役コレクション） */
+.yk{flex-wrap:wrap}
+.yk .yd{flex-basis:100%;font-size:12px;font-weight:700;color:var(--ink-soft);text-align:left;margin-top:1px;line-height:1.4}
+button.ci{font:inherit;color:inherit;cursor:pointer;width:100%}
+.ci.sel{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold) inset}
+.colinfo{margin:12px 0 0;padding:12px;border-radius:12px;border:1px dashed var(--line);font-size:13px;font-weight:700;color:var(--ink-soft);text-align:center}
+.colinfo.on{border-style:solid;border-color:rgba(255,210,130,.55);background:rgba(255,210,130,.07);color:var(--ink);text-align:left}
+.colinfo .cin{display:flex;justify-content:space-between;align-items:baseline}
+.colinfo .cin b{font-family:var(--brush);font-weight:400;font-size:22px;color:var(--gold)}
+.colinfo .cin span{font-family:var(--disp);font-size:14px;color:var(--gold)}
+.colinfo p{margin:6px 0 8px;line-height:1.6}
+.colinfo .cex{display:flex;flex-wrap:wrap;gap:6px}
+.colinfo .cex span{display:flex;gap:1px}
+.colinfo .cex .t{width:17px;box-shadow:0 2px 0 var(--mint),0 3px 4px rgba(0,0,0,.3)}
+
+/* 手牌のまとまり（色ごと・面子ごと）と待ち */
+#hand{gap:9px;align-items:flex-end}
+#hand .hg{display:flex;gap:2px;flex:none}
+#hand .hg.rest{opacity:.4}
+#hand .hg.wait{align-items:center;gap:3px;padding-left:9px;border-left:1px dashed rgba(255,122,162,.7)}
+#hand .wl{font-size:11px;font-weight:900;color:var(--pink);writing-mode:vertical-rl;letter-spacing:.1em;margin-right:1px}
+#hand .t.ghost{opacity:.6;box-shadow:0 3px 0 var(--pink),0 0 0 2px rgba(255,122,162,.65);animation:ghostPulse 1.4s ease-in-out infinite}
+@keyframes ghostPulse{50%{opacity:.95}}
+#handlabel.tenpai{color:var(--pink)}
+#handlabel.tenpai .tag{color:#fff;background:linear-gradient(180deg,#ffa3c2,#ff5f8f);border-color:transparent;box-shadow:0 2px 0 #a8345d}
+@media (prefers-reduced-motion: reduce){#hand .t.ghost{animation:none}}
+
+/* はじめての人への案内の吹き出し */
+#coach{position:relative;max-width:520px;margin:0 auto 12px;padding:10px 14px;border-radius:14px;font-size:14px;font-weight:900;line-height:1.5;color:#3a2208;
+  background:linear-gradient(180deg,#fff3c4,#ffd27a);box-shadow:0 4px 0 #a86a22,0 8px 24px rgba(10,5,30,.4);pointer-events:auto}
+#coach::after{content:"";position:absolute;left:50%;bottom:-7px;width:14px;height:14px;transform:translateX(-50%) rotate(45deg);background:#ffd27a;box-shadow:3px 3px 0 #a86a22}
+#coach[hidden]{display:none}
+#hand.many{gap:5px}#hand.many .t{width:20px}
+#handlabel .wt{display:inline-flex;gap:2px;flex:none}
+#handlabel .wt .t{width:17px;opacity:.75;box-shadow:0 2px 0 var(--pink),0 0 0 1.5px rgba(255,122,162,.8);animation:ghostPulse 1.4s ease-in-out infinite}
+@media (prefers-reduced-motion: reduce){#handlabel .wt .t{animation:none}}
+.ci.lock{opacity:.62}.ci.lock .n{letter-spacing:normal}

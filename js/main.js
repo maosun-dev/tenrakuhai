@@ -473,14 +473,37 @@ function updateHud(){
 const timg=(k,cls='')=>`<img class="t ${cls}" src="${faceURLs[k]}" alt="${kindName(k)}">`;
 function kindName(k){if(k<9)return NUMK[k]+'萬';if(k<18)return NUMK[k-9]+'筒';if(k<27)return NUMK[k-18]+'索';return HONK[k-27];}
 
+// 待ち（あと1枚で和了れる牌）。台の上の牌で調べる。同じ並びなら前の結果を使う
+let waitKey='',waitVal=[];
+function waitsOf(c,n){
+  if(n<13||n>17)return[];
+  const key=c.join(',');if(key===waitKey)return waitVal;
+  const w=[];
+  for(let k=0;k<34;k++){if(c[k]>=4)continue;c[k]++;const ok=findBest(c,k);c[k]--;if(ok)w.push(k);}
+  waitKey=key;waitVal=w;return w;
+}
+// 下の枠の手牌：和了れるときは面子ごと、ふだんは萬子・筒子・索子・字牌ごとに分けて並べる
 function renderHand(){
-  const c=boardCounts(),n=c.reduce((a,b)=>a+b,0);
-  const used=Array(34).fill(0);if(best)best.tiles.forEach(k=>used[k]++);
-  let h='';for(let k=0;k<34;k++)for(let i=0;i<c[k];i++){h+=timg(k,used[k]>0?'used':'');if(used[k]>0)used[k]--;}
-  $('hand').innerHTML=h;
-  const lb=$('handlabel');
-  if(best){lb.className='win';lb.innerHTML=`<span class="tag">和了れる！</span>${best.yaku.map(y=>y.n).join('・')}`;}
-  else{lb.className='';lb.innerHTML=`<span class="tag">台の上</span><b>${n}</b>枚${n<14?'<small>14枚から和了のチャンス</small>':''}`;}
+  const c=boardCounts(),n=c.reduce((a,b)=>a+b,0),lb=$('handlabel');
+  const run=ks=>ks.map(k=>timg(k)).join('');
+  let h='';
+  if(best){
+    const rest=c.slice();best.tiles.forEach(k=>rest[k]--);
+    h=best.groups.map(g=>`<span class="hg">${g.map(k=>timg(k,'used')).join('')}</span>`).join('');
+    const r=[];for(let k=0;k<34;k++)for(let i=0;i<rest[k];i++)r.push(k);
+    if(r.length)h+=`<span class="hg rest">${run(r)}</span>`;
+    lb.className='win';lb.innerHTML=`<span class="tag">和了れる！</span>${best.yaku.map(y=>y.n).join('・')}`;
+  }else{
+    for(const [a,b] of [[0,9],[9,18],[18,27],[27,34]]){
+      const g=[];for(let k=a;k<b;k++)for(let i=0;i<c[k];i++)g.push(k);
+      if(g.length)h+=`<span class="hg">${run(g)}</span>`;
+    }
+    const w=waitsOf(c,n);
+    if(w.length){
+      lb.className='tenpai';lb.innerHTML=`<span class="tag">あと1枚！</span><span class="wt">${w.slice(0,6).map(k=>timg(k,'ghost')).join('')}${w.length>6?'…':''}</span>${w.length>3?'のどれか':''}がくれば和了`;
+    }else{lb.className='';lb.innerHTML=`<span class="tag">台の上</span><b>${n}</b>枚${n<14?'<small>14枚から和了のチャンス</small>':''}`;}
+  }
+  $('hand').innerHTML=h;$('hand').classList.toggle('many',n>=12);
 }
 // 選べる牌それぞれについて「積めば和了れるか（すでに和了れるなら点数が上がるか）」を調べる
 let pickWinKey='',pickWinVal=[];
@@ -522,7 +545,38 @@ function renderCtrl(){
   on('bRot',()=>{if(held){turnHeld(held);chime([660],.05);}});
   on('bStand',()=>{if(held){toggleStand(held);chime([740],.05);renderCtrl();}});
   on('bDrop',drop);
+  renderCoach();
 }
+
+/* ---------- はじめての人への案内（それぞれ1回だけ。下の枠の上に吹き出しで出す） ---------- */
+const COACH_KEY='tenraku-coach';
+const COACH={
+  pick:'まずは2枚のうち、好きな牌をタップしてえらんでね',
+  aim:'指でドラッグして落とす場所を決めよう。ピンクの四角が着地点。指をはなすと落ちるよ',
+  stack:'この調子で積み上げよう。台の上の牌で役ができると和了れるよ',
+  tenpai:'あと1枚！ 上に出ている牌を積めば和了れるよ',
+  tsumo:'役ができた！「ツモ！」を押すと点数ゲット。使った牌は消えるよ',
+};
+let coachSeen=null,coachNow=null;
+function coachLoad(){if(!coachSeen){try{coachSeen=JSON.parse(localStorage.getItem(COACH_KEY)||'{}');}catch(e){coachSeen={};}}return coachSeen;}
+function coachStep(){
+  if(debug)return null;
+  if(state==='aim')return'aim';
+  if(state!=='choose')return null;
+  if(best)return'tsumo';
+  if(waitVal.length&&waitKey===boardCounts().join(','))return'tenpai';
+  if(choices.length)return dropSeq?'stack':'pick';
+  return null;
+}
+function renderCoach(){
+  const el=$('coach'),seen=coachLoad(),st=coachStep();
+  if(st&&st===coachNow)return;
+  if(!st||seen[st]){coachNow=null;el.hidden=true;return;}
+  coachNow=st;seen[st]=1;try{localStorage.setItem(COACH_KEY,JSON.stringify(seen));}catch(e){}
+  el.textContent=COACH[st];el.hidden=false;
+  el.animate([{opacity:0,transform:'translateY(8px)'},{opacity:1,transform:'none'}],{duration:260,easing:'ease-out'});
+}
+$('coach').onclick=()=>{$('coach').hidden=true;};   // タップで閉じる
 
 let customSky=-1,customTrack=-1;
 function renderCustom(){
@@ -661,7 +715,7 @@ function showWin(B){
   $('winBox').innerHTML=`
     <div class="tsumoTxt${ym}">ツモ</div>
     <div class="wintiles">${B.groups.map(g=>`<div class="grp">${g.map(k=>timg(k)).join('')}</div>`).join('')}</div>
-    <div class="yakulist">${B.yaku.map((y,i)=>`<div class="yk" style="--d:${(start+i*step).toFixed(2)}s"><span class="yn">${y.n}${(B.newYaku||[]).includes(y.n)?'<span class="new">初</span>':''}</span><span class="yh">${y.h?y.h+'翻':'役満'}</span></div>`).join('')}</div>
+    <div class="yakulist">${B.yaku.map((y,i)=>`<div class="yk" style="--d:${(start+i*step).toFixed(2)}s"><span class="yn">${y.n}${(B.newYaku||[]).includes(y.n)?'<span class="new">初</span>':''}</span><span class="yh">${y.h?y.h+'翻':'役満'}</span>${yakuDesc(y.n)?`<span class="yd">${yakuDesc(y.n)}</span>`:''}</div>`).join('')}</div>
     ${rank?`<div class="rank${ym}" style="--d:${(tEnd+.1).toFixed(2)}s">${rank}</div>`:''}
     <div class="wpts" style="--d:${(tEnd+.35).toFixed(2)}s"><span id="ptsNum">0</span><small>点</small></div>
     <button class="btn primary wbtn" id="winBtn" style="--d:${(tEnd+.9).toFixed(2)}s;font-size:17px;padding:12px 26px">牌を消してつづける</button>`;
@@ -823,7 +877,7 @@ function toTitle(){
   state='title';best=null;choices=[];score=0;lives=3;wall=[];
   $('overOv').classList.remove('show');$('winOv').classList.remove('show');$('reviveOv').classList.remove('show');reviveResume=null;
   if(Ads)Ads.showBanner();
-  $('ctrl').innerHTML='';$('hand').innerHTML='';$('handlabel').textContent='';
+  $('ctrl').innerHTML='';$('hand').innerHTML='';$('handlabel').textContent='';$('coach').hidden=true;coachNow=null;
   updateHud();demoStack();refreshTitle();stage=0;setSky(0);setTrack(0);
   const st=document.querySelector('.stack');st.replaceWith(st.cloneNode(true));
   $('startOv').classList.add('show');$('startOv').scrollTop=0;fitTitle();
@@ -1178,6 +1232,39 @@ function playYakuman(done){
 }
 
 /* ---------- 役コレクション ---------- */
+// 役の説明（和了画面と役コレクションで使う）。ex は作り方の例（牌の番号：0〜8 萬子、9〜17 筒子、18〜26 索子、27東 28南 29西 30北 31白 32發 33中）
+const YAKU_INFO={
+  '門前清自摸和':{d:'自分で積んだ牌で和了ると付く。このゲームではいつも付くよ',ex:[0,1,2,12,13,14,24,25,26,19,20,21,13,13]},
+  '断么九':{d:'1・9・字牌を使わず、2〜8の牌だけで作る',ex:[1,2,3,4,5,6,11,12,13,23,24,25,10,10]},
+  '平和':{d:'4組とも順子（連番）で、雀頭は役牌以外。最後の1枚が両面待ちで入ったときだけ',ex:[0,1,2,3,4,5,15,16,17,20,21,22,26,26]},
+  '一盃口':{d:'同じ順子を2組そろえる（例：二三四萬を2つ）',ex:[1,1,2,2,3,3,13,14,15,24,25,26,27,27]},
+  '役牌 白':{d:'白を3枚そろえる',ex:[31,31,31,0,1,2,12,13,14,24,25,26,4,4]},
+  '役牌 發':{d:'發を3枚そろえる',ex:[32,32,32,0,1,2,12,13,14,24,25,26,4,4]},
+  '役牌 中':{d:'中を3枚そろえる',ex:[33,33,33,0,1,2,12,13,14,24,25,26,4,4]},
+  '役牌 東':{d:'東を3枚そろえる',ex:[27,27,27,0,1,2,12,13,14,24,25,26,4,4]},
+  '三色同順':{d:'萬子・筒子・索子で、同じ数の順子をそろえる（例：三四五を3色）',ex:[2,3,4,11,12,13,20,21,22,6,7,8,19,19]},
+  '一気通貫':{d:'同じ色で一二三・四五六・七八九をそろえる',ex:[9,10,11,12,13,14,15,16,17,19,20,21,4,4]},
+  '三暗刻':{d:'同じ牌3枚の組を3つ作る',ex:[1,1,1,13,13,13,25,25,25,20,21,22,0,0]},
+  '小三元':{d:'白・發・中のうち2つを3枚ずつ、残り1つを雀頭にする',ex:[31,31,31,32,32,32,33,33,0,1,2,21,22,23]},
+  '七対子':{d:'同じ牌2枚の組を7つ作る（特別な形）',ex:[0,0,2,2,13,13,15,15,26,26,27,27,31,31]},
+  '混老頭':{d:'1・9・字牌だけで作る',ex:[0,0,8,8,9,9,17,17,18,18,27,27,31,31]},
+  '混全帯么九':{d:'どの組にも1か9か字牌が入るように作る（字牌あり）',ex:[0,1,2,15,16,17,18,19,20,26,26,26,27,27]},
+  '混一色':{d:'1つの色と字牌だけで作る',ex:[0,1,2,3,4,5,6,7,8,27,27,27,31,31]},
+  '純全帯么九':{d:'どの組にも1か9が入るように作る（字牌なし）',ex:[0,1,2,6,7,8,9,10,11,26,26,26,9,9]},
+  '二盃口':{d:'一盃口を2つ作る',ex:[1,1,2,2,3,3,13,13,14,14,15,15,26,26]},
+  '清一色':{d:'1つの色だけで作る（字牌も使わない）',ex:[0,1,2,2,3,4,4,5,6,6,7,8,1,1]},
+  '大三元':{d:'白・發・中をすべて3枚ずつそろえる',ex:[31,31,31,32,32,32,33,33,33,0,1,2,4,4]},
+  '四暗刻':{d:'同じ牌3枚の組を4つ作る',ex:[1,1,1,13,13,13,25,25,25,27,27,27,4,4]},
+  '字一色':{d:'字牌だけで作る',ex:[27,27,27,28,28,28,29,29,29,31,31,31,33,33]},
+  '国士無双':{d:'1・9・字牌の13種類を1枚ずつ＋どれか1枚',ex:[0,8,9,17,18,26,27,28,29,30,31,32,33,33]},
+  '緑一色':{d:'二三四六八索と發だけで作る（緑の牌だけ）',ex:[19,20,21,19,20,21,23,23,23,25,25,25,32,32]},
+  '清老頭':{d:'1と9の牌だけで作る',ex:[0,0,0,8,8,8,9,9,9,17,17,17,26,26]},
+  '小四喜':{d:'東南西北のうち3つを3枚ずつ、残り1つを雀頭にする',ex:[27,27,27,28,28,28,29,29,29,30,30,0,1,2]},
+  '大四喜':{d:'東南西北をすべて3枚ずつそろえる',ex:[27,27,27,28,28,28,29,29,29,30,30,30,4,4]},
+  '九蓮宝燈':{d:'1つの色で 一一一二三四五六七八九九九 ＋どれか1枚',ex:[0,0,0,1,2,3,4,5,6,7,8,8,8,4]},
+  '数え役満':{d:'役の翻数を合わせて13翻以上になると役満あつかい',ex:null},
+};
+const yakuDesc=n=>(YAKU_INFO[n]||{}).d||'';
 const YAKU_LIST=[['門前清自摸和',1],['断么九',1],['平和',1],['一盃口',1],['役牌 白',1],['役牌 發',1],['役牌 中',1],['役牌 東',1],
   ['三色同順',2],['一気通貫',2],['三暗刻',2],['小三元',2],['七対子',2],['混老頭',2],['混全帯么九',2],
   ['混一色',3],['純全帯么九',3],['二盃口',3],['清一色',6],['大三元',0],['四暗刻',0],['字一色',0],['国士無双',0],['緑一色',0],['清老頭',0],['小四喜',0],['大四喜',0],['九蓮宝燈',0],['数え役満',0]];
@@ -1196,10 +1283,22 @@ function renderCol(){
     const k=c[n]||0;total+=k;if(k)got++;
     const hs=h?h+'翻':'役満';
     const open=k||allUnlocked();
-    return open?`<div class="ci${h?'':' ym'}"><div class="n">${n}</div><div class="m"><span>${hs}</span><span><b>${k}</b> 回</span></div></div>`
-            :`<div class="ci lock${h?'':' ym'}"><div class="n">？？？</div><div class="m"><span>${hs}</span><span>未達成</span></div></div>`;
+    return`<button class="ci${h?'':' ym'}${open?'':' lock'}" data-n="${n}"><div class="n">${n}</div><div class="m"><span>${hs}</span><span>${open?`<b>${k}</b> 回`:'まだ'}</span></div></button>`;
   }).join('');
   $('colProg').textContent=`${got} / ${YAKU_LIST.length} 種類　のべ ${total} 回`;
+  $('colList').querySelectorAll('.ci').forEach(b=>b.onclick=()=>showYakuInfo(b.dataset.n));
+}
+// 牌の例を面子ごとに分ける（組み立てがわかるように）
+function exGroups(ex){const c=Array(34).fill(0);ex.forEach(k=>c[k]++);const B=findBest(c,null);return B?B.groups:[ex];}
+// 役をタップしたとき：上の枠に作り方と牌の例を出す
+function showYakuInfo(n){
+  const I=YAKU_INFO[n],box=$('colInfo');if(!I)return;
+  const h=(YAKU_LIST.find(y=>y[0]===n)||[])[1];
+  box.innerHTML=`<div class="cin"><b>${n}</b><span>${h?h+'翻':'役満'}</span></div><p>${I.d}</p>`+
+    (I.ex?`<div class="cex">${exGroups(I.ex).map(g=>`<span>${g.map(k=>timg(k)).join('')}</span>`).join('')}</div>`:'');
+  box.classList.add('on');
+  document.querySelectorAll('#colList .ci').forEach(b=>b.classList.toggle('sel',b.dataset.n===n));
+  box.scrollIntoView({block:'nearest',behavior:'smooth'});
 }
 $('colBtn').onclick=()=>{renderCol();$('colOv').classList.add('show');$('colOv').scrollTop=0;};
 $('colClose').onclick=()=>$('colOv').classList.remove('show');

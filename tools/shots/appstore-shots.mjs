@@ -11,7 +11,8 @@ const OUT = process.argv[2] || 'shots-out';
 const URL = process.argv[3] || 'http://127.0.0.1:8770/';
 const CHROME = 'C:/Program Files/Google/Chrome/Application/chrome.exe';
 const PORT = 9333;
-const W = 440, H = 956, DPR = 3;   // 1320×2868
+// 既定は 6.3インチ（1206×2622）。SIZE=6.9 で 1320×2868
+const [W, H] = process.env.SIZE === "6.9" ? [440, 956] : [402, 874], DPR = 3;
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 mkdirSync(OUT, { recursive: true });
 

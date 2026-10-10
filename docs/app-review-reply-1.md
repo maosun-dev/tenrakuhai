@@ -10,7 +10,7 @@ Hello App Review Team,
 Thank you for reviewing Tenrakuhai. Here is the information you requested.
 
 1. Screen recording
-The attached screen recording was captured on a physical iPhone running the latest iOS. It starts with launching the app and shows the typical flow: the first-launch tracking permission prompt, the title screen, choosing a tile, dragging and dropping it onto the table, completing a winning hand ("Tsumo!"), the result screen, the Yaku Collection, and the Game Center leaderboard.
+The attached screen recording was captured on a physical iPhone running the latest iOS. It starts with launching the app and shows the typical flow: the first-launch tracking permission prompt, the title screen, choosing a tile, dragging and dropping it onto the table, completing a winning hand ("Tsumo!"), losing all hearts, the result screen, the ranking screen, and the Game Center leaderboards.
 The app has no account registration, no login, no user-generated content, and no paid content or In-App Purchases.
 
 2. Purpose and target audience

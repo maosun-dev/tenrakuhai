@@ -7,3 +7,4 @@ www/
 
 # App Store Connect の鍵（絶対に上げない）
 *.p8
+review-video/

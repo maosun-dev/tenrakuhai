@@ -59,12 +59,12 @@
   <div id="skyfx"><div class="dusk"></div><canvas id="aurora"></canvas></div>
   <canvas id="gl"></canvas>
   <div id="hud">
-    <div class="pill"><b id="score">0</b> 点</div>
-    <div class="pill">山 <b id="wall">136</b></div>
+    <div class="pill"><b id="score">0</b> <span data-i18n="pts">点</span></div>
+    <div class="pill"><span data-i18n="wall">山</span> <b id="wall">136</b></div>
     <div class="pill" id="hearts"><svg class="ic"><use href="#i-heart"/></svg><svg class="ic"><use href="#i-heart"/></svg><svg class="ic"><use href="#i-heart"/></svg></div>
-    <button class="pill" id="quitBtn" aria-label="ゲームをやめる" style="pointer-events:auto;margin-left:auto"><svg class="ic"><use href="#i-pause"/></svg></button>
-    <button class="pill" id="music" aria-label="音楽のオンオフ" style="pointer-events:auto"><svg class="ic"><use href="#i-music"/></svg></button>
-    <button class="pill" id="mute" aria-label="効果音のオンオフ"><svg class="ic"><use href="#i-sound"/></svg></button>
+    <button class="pill" id="quitBtn" data-i18n-aria="quitAria" aria-label="ゲームをやめる" style="pointer-events:auto;margin-left:auto"><svg class="ic"><use href="#i-pause"/></svg></button>
+    <button class="pill" id="music" data-i18n-aria="musicAria" aria-label="音楽のオンオフ" style="pointer-events:auto"><svg class="ic"><use href="#i-music"/></svg></button>
+    <button class="pill" id="mute" data-i18n-aria="muteAria" aria-label="効果音のオンオフ"><svg class="ic"><use href="#i-sound"/></svg></button>
   </div>
   <div id="toast"></div>
   <div id="bottom">
@@ -77,6 +77,7 @@
   </div>
 
   <div class="overlay show" id="startOv">
+    <button class="langbtn" id="langBtn" data-i18n-aria="lang" aria-label="言語"><span class="lj">あ</span><span class="le">EN</span></button>
     <div class="start">
       <div class="logo">
         <div class="stack" role="img" aria-label="転落牌">
@@ -85,13 +86,13 @@
           <div class="ht c">牌</div>
         </div>
         <div class="side">
-          <div class="catch">積んで、そろえて、<br>落とさない。</div>
-          <div class="kana">てんらくはい</div>
+          <div class="catch" data-i18n="catch">積んで、そろえて、<br>落とさない。</div>
+          <div class="kana" data-i18n="kana">てんらくはい</div>
         </div>
       </div>
-      <div class="modebtns"><button class="startbtn" id="startBtn" disabled>じゅんび中…</button><button class="btn endbtn" id="endlessBtn" disabled>∞ エンドレス<small>山がなくなっても続く</small></button></div>
-      <div class="row2"><button class="btn" id="howBtn"><svg class="ic"><use href="#i-book"/></svg>あそびかた</button><button class="btn" id="rankBtn"><svg class="ic"><use href="#i-trophy"/></svg>ランキング</button></div>
-      <div class="row2"><button class="btn" id="colBtn"><svg class="ic"><use href="#i-tiles"/></svg>役コレクション</button><button class="btn locked" id="mbBtn"><svg class="ic"><use href="#i-lock"/></svg>ミュージックボックス</button></div>
+      <div class="modebtns"><button class="startbtn" id="startBtn" data-i18n="loading" disabled>じゅんび中…</button><button class="btn endbtn" id="endlessBtn" data-i18n="endless" disabled>∞ エンドレス<small>山がなくなっても続く</small></button></div>
+      <div class="row2"><button class="btn" id="howBtn"><svg class="ic"><use href="#i-book"/></svg><span data-i18n="how">あそびかた</span></button><button class="btn" id="rankBtn"><svg class="ic"><use href="#i-trophy"/></svg><span data-i18n="rank">ランキング</span></button></div>
+      <div class="row2"><button class="btn" id="colBtn"><svg class="ic"><use href="#i-tiles"/></svg><span data-i18n="col">役コレクション</span></button><button class="btn locked" id="mbBtn"><svg class="ic"><use href="#i-lock"/></svg>ミュージックボックス</button></div>
       <div class="dbg" id="dbgBadge" hidden><svg class="ic"><use href="#i-tile"/></svg>役満モード！</div>
 
       <div class="rec" id="startRec"></div>
@@ -195,6 +196,7 @@
 
 <script src="js/vendor/three.min.js"></script>
 <script src="js/vendor/cannon.min.js"></script>
+<script src="js/i18n.js"></script>
 <script src="js/ads.js"></script>
 <script src="js/main.js"></script>
 </body>

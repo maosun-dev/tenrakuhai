@@ -163,6 +163,16 @@ button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 .side{display:flex;gap:10px;align-items:flex-start;padding-bottom:calc(var(--u) * .27)}
 .kana{writing-mode:vertical-rl;font-weight:900;font-size:13px;letter-spacing:.6em;color:var(--gold)}
 .catch{writing-mode:vertical-rl;font-family:var(--brush);font-size:calc(var(--u) * .3);letter-spacing:.16em;line-height:1.5;color:#fff;text-shadow:0 0 14px rgba(255,140,190,.7)}
+/* 言語ボタン：小さな牌。いまの言語を赤い字で示す */
+html[lang=en] .catch{font-family:"Zen Maru Gothic",sans-serif;font-weight:700;letter-spacing:.08em}
+.langbtn{position:absolute;top:calc(env(safe-area-inset-top,0px) + 14px);right:16px;z-index:2;width:38px;height:50px;border-radius:7px;padding:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+  background:linear-gradient(170deg,#fffef9,#f4ebd4);color:#b9ad92;box-shadow:inset 0 0 0 2px #fffdf7,inset 0 -2px 0 #e6dbc0,0 4px 0 #7cc9ae,0 6px 0 #4fae8e,0 10px 14px rgba(0,0,0,.35);
+  font-family:"Noto Serif JP","Hiragino Mincho ProN",serif;font-weight:900;line-height:1;transition:transform .12s}
+.langbtn:active{transform:translateY(3px)}
+.langbtn:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+.langbtn .lj{font-size:17px}
+.langbtn .le{font-size:11px;letter-spacing:.04em}
+.langbtn:not(.en) .lj,.langbtn.en .le{color:#d6283a}
 .startbtn{background:linear-gradient(180deg,#ffe6a6,#f4b54a);color:#3a2208;border-radius:16px;padding:12px 0;width:100%;font-family:var(--disp);font-size:24px;letter-spacing:.4em;
   box-shadow:0 6px 0 #a86a22,0 0 30px rgba(255,200,110,.4);transition:transform .08s}
 .startbtn:active{transform:translateY(4px);box-shadow:0 2px 0 #a86a22}

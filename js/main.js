@@ -845,7 +845,8 @@ $('startOv').addEventListener('click',()=>{ac();initBGM();});
 let endless=false,lap=1;
 function startGame(inf){endless=inf;ac();wantTrack=0;initBGM();prepYakuman();$('startOv').classList.remove('show');newGame();}
 $('startBtn').onclick=()=>startGame(false);
-$('endlessBtn').onclick=()=>{if(!endlessUnlocked()){toast('完走すると遊べるようになるよ');chime([440,330],.06,'triangle',.08);return;}startGame(true);};
+$('langBtn').onclick=()=>I18N.setLang(I18N.lang==='en'?'ja':'en');
+$('endlessBtn').onclick=()=>{if(!endlessUnlocked()){toast(T('完走すると遊べるようになるよ','endlessHint'));chime([440,330],.06,'triangle',.08);return;}startGame(true);};
 // ゲームオーバーのあとに次へ進むとき、設定しだいで全画面広告をはさむ（最初は出さない設定）
 let nextBusy=false;
 async function afterOverAd(){
@@ -854,7 +855,7 @@ async function afterOverAd(){
 $('againBtn').onclick=async()=>{if(!await afterOverAd())return;ac();prepYakuman();stage=0;newGame();setSky(0);setTrack(0);initBGM();};
 $('titleBtn').onclick=async()=>{if(!await afterOverAd())return;toTitle();};
 function showRec(){try{const r=+localStorage.getItem('ponpon-pai-best')||0,e=+localStorage.getItem('ponpon-pai-best-endless')||0;
-  $('startRec').textContent=[r?`自己ベスト ${r.toLocaleString()}点`:'',e?`エンドレス ${e.toLocaleString()}点`:''].filter(Boolean).join('　');}catch(e){}}
+  $('startRec').textContent=[r?T(`自己ベスト ${r.toLocaleString()}点`,'best',{n:r.toLocaleString()}):'',e?T(`エンドレス ${e.toLocaleString()}点`,'bestEndless',{n:e.toLocaleString()}):''].filter(Boolean).join('　');}catch(e){}}
 function demoStack(){
   [[4,-.8,0,.3],[21,.7,.1,-.4],[33,0,-.1,1.1]].forEach(([k,x,z,yaw],i)=>{
     const m=makeMesh(k);m.position.set(x,TH/2+(i===2?TH:0),z);m.rotation.y=yaw;scene.add(m);
@@ -988,7 +989,7 @@ async function boot(){
   }catch(e){}
   buildFaces();
   demoStack();camY=settledTop;
-  const sb=$('startBtn');sb.disabled=false;sb.textContent='あそぶ';$('endlessBtn').disabled=false;refreshTitle();fitTitle();setTimeout(fitTitle,300);
+  const sb=$('startBtn');sb.disabled=false;sb.textContent=T('あそぶ','play');$('endlessBtn').disabled=false;refreshTitle();fitTitle();setTimeout(fitTitle,300);
   if(Ads)Ads.showBanner();
   requestAnimationFrame(loop);
 }
@@ -1163,7 +1164,7 @@ function endlessUnlocked(){try{return localStorage.getItem(EKEY)==='1'||allUnloc
 function allUnlocked(){try{return localStorage.getItem(ALLKEY)==='1';}catch(e){return false;}}
 function mbUnlocked(){try{return localStorage.getItem(MBKEY)==='1'||allUnlocked();}catch(e){return false;}}
 function unlockMB(){if(mbUnlocked())return false;try{localStorage.setItem(MBKEY,'1');}catch(e){}return true;}
-function refreshTitle(){showRec();{const eb=$('endlessBtn'),u=endlessUnlocked();eb.classList.toggle('locked',!u);eb.innerHTML=u?'∞ エンドレス<small>山がなくなっても続く</small>':ic('lock')+'エンドレス<small>完走すると解放</small>';}const b=$('mbBtn'),u=mbUnlocked();b.classList.toggle('locked',!u);b.innerHTML=(u?ic('music'):ic('lock'))+'ミュージックボックス';}
+function refreshTitle(){showRec();{const eb=$('endlessBtn'),u=endlessUnlocked();eb.classList.toggle('locked',!u);eb.innerHTML=u?T('∞ エンドレス<small>山がなくなっても続く</small>','endless'):ic('lock')+T('エンドレス<small>完走すると解放</small>','endlessLocked');}const b=$('mbBtn'),u=mbUnlocked();b.classList.toggle('locked',!u);b.innerHTML=(u?ic('music'):ic('lock'))+T('ミュージックボックス','mb');}
 function stopMusic(){
   if(!mus||curTrack<0)return;const old=mus[curTrack],t=actx.currentTime;
   old.g.gain.cancelScheduledValues(t);old.g.gain.setTargetAtTime(0,t,.3);setTimeout(()=>{if(mus[curTrack]!==old)old.el.pause();},1500);

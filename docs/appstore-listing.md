@@ -60,7 +60,9 @@ App Store Connect の「App 情報」「バージョン情報」に貼り付け�
 |---|---|
 | カテゴリ（プライマリ） | ゲーム |
 | サブカテゴリ | パズル、カジュアル |
-| サポートURL | https://maosun-dev.github.io/support.html |
-| マーケティングURL | https://maosun-dev.github.io/ |
-| プライバシーポリシーURL | https://maosun-dev.github.io/tenrakuhai/privacy.html |
+| サポートURL | https://maosun-dev.com/support.html |
+| マーケティングURL | https://maosun-dev.com/ |
+| プライバシーポリシーURL | https://maosun-dev.com/tenrakuhai/privacy.html |
+
+> **要対応（2026-10-13）**：1.0 は github.io のURLで審査に出している。github.io は maosun-dev.com へ転送されるため、AdMob が app-ads.txt を確認できず広告配信が制限される（ワンタップ収支で発覚）。1.0 の審査が終わったら、1.0.1 で上の maosun-dev.com のURLに直して出す。却下されたら、そのときに直して再提出する。
 | 著作権 | 2026 maosun-dev |

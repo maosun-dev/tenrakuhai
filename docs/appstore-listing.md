@@ -64,5 +64,5 @@ App Store Connect の「App 情報」「バージョン情報」に貼り付け�
 | マーケティングURL | https://maosun-dev.com/ |
 | プライバシーポリシーURL | https://maosun-dev.com/tenrakuhai/privacy.html |
 
-> **要対応（2026-10-13）**：1.0 は github.io のURLで審査に出している。github.io は maosun-dev.com へ転送されるため、AdMob が app-ads.txt を確認できず広告配信が制限される（ワンタップ収支で発覚）。1.0 の審査が終わったら、1.0.1 で上の maosun-dev.com のURLに直して出す。却下されたら、そのときに直して再提出する。
+> **2026-10-13**：1.0 は最初 github.io のURLで出していた（github.io は maosun-dev.com へ転送されるため、AdMob が app-ads.txt を確認できず広告配信が制限される。ワンタップ収支で発覚）。審査待ちのあいだに App Store Connect でサポートURL・マーケティングURLを上の maosun-dev.com に直して保存済み。公開されたら AdMob の「ストアを追加」→ app-ads.txt の確認が通るか見る。
 | 著作権 | 2026 maosun-dev |

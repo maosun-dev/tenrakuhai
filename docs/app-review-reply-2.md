@@ -15,7 +15,7 @@ Hello App Review Team,
 
 Thank you for your feedback regarding App Tracking Transparency.
 
-We found that the tracking permission request could be silently skipped on some devices, because it was requested while the app was still launching and not yet active. In build [BUILD NUMBER], the request is now made only after the app's screen is fully shown, and it is retried if it was not presented. The Google Mobile Ads SDK is initialized only after the user has responded to the request, so no tracking data is collected before the permission request.
+We found that the tracking permission request could be silently skipped on some devices, because it was requested while the app was still launching and not yet active. In build 1.0 (9), the request is now made only after the app's screen is fully shown, and it is retried if it was not presented. The Google Mobile Ads SDK is initialized only after the user has responded to the request, so no tracking data is collected before the permission request.
 
 The attached screen recording was captured on a physical iPhone running the latest iOS. It shows:
 1. Launching the app after a fresh install (with "Allow Apps to Request to Track" turned on in Settings).

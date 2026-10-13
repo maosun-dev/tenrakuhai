@@ -74,11 +74,33 @@ function finishInter() {
   loadInter();
 }
 
-async function initNative() {
+// iPhone の「追跡してもいいですか」の確認画面を出す。
+// アプリが前面に出きる前に頼むと、iOS は画面を出さずに黙って無視する（端末の速さで出たり出なかったりする）。
+// そこで画面が表示されてから少し待って頼み、まだ決まっていなければ間をおいて頼み直す。
+const wait = ms => new Promise(r => setTimeout(r, ms));
+const pageShown = () => new Promise(r => {
+  const ok = () => document.readyState === 'complete' && document.visibilityState === 'visible';
+  if (ok()) return r();
+  const check = () => {
+    if (!ok()) return;
+    window.removeEventListener('load', check); document.removeEventListener('visibilitychange', check); r();
+  };
+  window.addEventListener('load', check); document.addEventListener('visibilitychange', check);
+});
+async function askTracking() {
   try {
-    const s = await AdMob.trackingAuthorizationStatus();
-    if (s.status === 'notDetermined') await AdMob.requestTrackingAuthorization();
+    for (let i = 0; i < 5; i++) {
+      const s = await AdMob.trackingAuthorizationStatus();
+      if (s.status !== 'notDetermined') return;
+      await pageShown();
+      await wait(i === 0 ? 1000 : 2000);
+      await AdMob.requestTrackingAuthorization();   // 画面が出たときは、選ぶまで戻ってこない
+    }
   } catch (e) {}
+}
+
+async function initNative() {
+  await askTracking();   // 広告の仕組みを動かす前に聞く（Apple の決まり）
   try { await AdMob.initialize({ initializeForTesting: !production }); } catch (e) { return; }
   AdMob.addListener('bannerAdSizeChanged', s => { bannerHeight = s.height || 0; if (bannerWanted) setAdHeight(bannerHeight); });
   AdMob.addListener('onRewardedVideoAdReward', () => { rewardGot = true; });

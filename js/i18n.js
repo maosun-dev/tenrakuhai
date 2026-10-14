@@ -67,7 +67,7 @@
     'revived':'Heart restored!',
     'fell':'It fell…',
     'skyAurora':'Into the aurora!',
-    'skyStar':'Stardust night!',
+    'skyStar':'Stardust Runner!',
     'skyDusk':'Back to dusk!',
     'passedN':'{n} pts reached',
     'mbUnlocked':'Music box unlocked!',
@@ -151,6 +151,7 @@
     // ミュージックボックス
     'stream':'Now on Apple Music and Spotify!',
     'amAlbum':'Open the album “Dropjong” on Apple Music',
+    'song1':'Stardust Runner',
     'scene0':'Title · 0–11,999 pts',
     'scene1':'12,000–35,999 pts',
     'scene2':'36,000 pts and up',

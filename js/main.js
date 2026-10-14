@@ -1160,7 +1160,7 @@ if(window.GameCenter){
 /* ---------- ミュージックボックス ---------- */
 const MBKEY='tenraku-musicbox';
 // [曲名, 流れる場面, Apple Music の曲ID]（アルバム「転落牌 - Single」）
-const TRACK_INFO=[['Sakura Drift',T('タイトル・0〜11,999点','scene0'),'6816609888'],['星屑ランナー',T('12,000〜35,999点','scene1'),'6816609889'],['Beyond the clouds',T('36,000点〜','scene2'),'6816609890']];
+const TRACK_INFO=[['Sakura Drift',T('タイトル・0〜11,999点','scene0'),'6816609888'],[T('星屑ランナー','song1'),T('12,000〜35,999点','scene1'),'6816609889'],['Beyond the clouds',T('36,000点〜','scene2'),'6816609890']];
 const AM_ALBUM='https://music.apple.com/jp/album/6816609887';
 // 英語のときは Apple Music も英語表示で開く
 const AM_LANG=I18N.lang==='en'?'&l=en-US':'';

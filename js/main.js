@@ -550,8 +550,10 @@ function renderCtrl(){
   renderCoach();
 }
 
-/* ---------- はじめての人への案内（それぞれ1回だけ。下の枠の上に吹き出しで出す） ---------- */
-const COACH_KEY='tenraku-coach';
+/* ---------- はじめての人への案内（下の枠の上に吹き出しで出す） ----------
+ * ふつうのモードでは、ゲームのたびに各案内を1回ずつ出す。ツモを3回したら（慣れたら）出さない。エンドレスでは出さない。
+ * ツモの回数は役コレクションの「門前清自摸和」の回数（このゲームでは和了のたびに必ず付く）を使う */
+const COACH_WINS=3;
 const COACH={
   pick:T('まずは2枚のうち、好きな牌をタップしてえらんでね','coachPick'),
   aim:T('指でドラッグして落とす場所を決めよう。ピンクの四角が着地点。指をはなすと落ちるよ','coachAim'),
@@ -559,10 +561,11 @@ const COACH={
   tenpai:T('あと1枚！ 上に出ている牌を積めば和了れるよ','coachTenpai'),
   tsumo:T('役ができた！「ツモ！」を押すと点数ゲット。使った牌は消えるよ','coachTsumo'),
 };
-let coachSeen=null,coachNow=null;
-function coachLoad(){if(!coachSeen){try{coachSeen=JSON.parse(localStorage.getItem(COACH_KEY)||'{}');}catch(e){coachSeen={};}}return coachSeen;}
+let coachSeen={},coachNow=null,coachOn=false;
+// ゲームの始めに呼ぶ：このゲームで案内を出すか決め、見た案内を忘れる
+function coachReset(){coachSeen={};coachNow=null;coachOn=!endless&&!debug&&(loadCol()['門前清自摸和']||0)<COACH_WINS;$('coach').hidden=true;}
 function coachStep(){
-  if(debug)return null;
+  if(!coachOn)return null;
   if(state==='aim')return'aim';
   if(state!=='choose')return null;
   if(best)return'tsumo';
@@ -571,10 +574,10 @@ function coachStep(){
   return null;
 }
 function renderCoach(){
-  const el=$('coach'),seen=coachLoad(),st=coachStep();
+  const el=$('coach'),st=coachStep();
   if(st&&st===coachNow)return;
-  if(!st||seen[st]){coachNow=null;el.hidden=true;return;}
-  coachNow=st;seen[st]=1;try{localStorage.setItem(COACH_KEY,JSON.stringify(seen));}catch(e){}
+  if(!st||coachSeen[st]){coachNow=null;el.hidden=true;return;}
+  coachNow=st;coachSeen[st]=1;
   el.textContent=COACH[st];el.hidden=false;
   el.animate([{opacity:0,transform:'translateY(8px)'},{opacity:1,transform:'none'}],{duration:260,easing:'ease-out'});
 }
@@ -601,6 +604,7 @@ function newGame(){
   score=0;lives=3;wins=0;streak=0;maxStreak=0;bestHand=null;maxHeight=0;best=null;choices=[];settledTop=0;graceUntil=0;
   revived=false;reviveResume=null;
   if(debug)debugSetup();
+  coachReset();
   $('overOv').classList.remove('show');$('winOv').classList.remove('show');$('reviveOv').classList.remove('show');
   if(Ads)Ads.hideBanner();
   toChoose();

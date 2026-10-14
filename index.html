@@ -106,80 +106,80 @@
 
   <div class="overlay" id="overOv">
     <div class="card">
-      <div class="gtitle">おしまい</div>
+      <div class="gtitle" data-i18n="over">おしまい</div>
       <div class="hint" id="overReason"></div>
       <div class="stats" id="overStats"></div>
       <div class="col">
-        <button class="btn primary" id="againBtn" style="font-size:18px;padding:12px">もう一回あそぶ</button>
-        <button class="btn" id="titleBtn">タイトルにもどる</button>
+        <button class="btn primary" id="againBtn" data-i18n="again" style="font-size:18px;padding:12px">もう一回あそぶ</button>
+        <button class="btn" id="titleBtn" data-i18n="toTitle">タイトルにもどる</button>
       </div>
     </div>
   </div>
   <div class="overlay" id="reviveOv">
     <div class="card">
-      <div class="gtitle" style="font-size:24px">ハートがなくなっちゃった</div>
-      <div class="hint" style="margin:10px 0 18px">動画広告を見ると、ハートが1つ回復して<br>このまま続けられるよ（1ゲームに1回だけ）</div>
+      <div class="gtitle" style="font-size:24px" data-i18n="outHearts">ハートがなくなっちゃった</div>
+      <div class="hint" style="margin:10px 0 18px" data-i18n="reviveText">動画広告を見ると、ハートが1つ回復して<br>このまま続けられるよ（1ゲームに1回だけ）</div>
       <div class="col">
-        <button class="btn primary" id="reviveYes" style="font-size:18px;padding:12px">▶︎ 動画を見て続ける</button>
-        <button class="btn" id="reviveNo">やめて結果を見る</button>
+        <button class="btn primary" id="reviveYes" data-i18n="reviveYes" style="font-size:18px;padding:12px">▶︎ 動画を見て続ける</button>
+        <button class="btn" id="reviveNo" data-i18n="reviveNo">やめて結果を見る</button>
       </div>
     </div>
   </div>
   <div class="overlay" id="howOv">
     <div class="card">
-      <div class="gtitle" style="font-size:32px">あそびかた</div>
+      <div class="gtitle" style="font-size:32px" data-i18n="how">あそびかた</div>
       <div class="howrules">
-        <p><svg class="ic"><use href="#i-tile"/></svg>2枚から好きな牌を選んで、上から落として積もう。</p>
-        <p><svg class="ic"><use href="#i-pointer"/></svg>ドラッグで位置を決めて、指をはなすと落ちる。ピンクの四角が着地点。</p>
-        <p><svg class="ic"><use href="#i-sparkle"/></svg>台の上の牌で役ができたら「ツモ！」を押して点数ゲット。使った牌は消えるよ。</p>
-        <p><svg class="ic"><use href="#i-heartbreak"/></svg>牌が台から落ちるとハートが減る。3つなくなるか、山がなくなったらおしまい。</p>
+        <p><svg class="ic"><use href="#i-tile"/></svg><span data-i18n="how1">2枚から好きな牌を選んで、上から落として積もう。</span></p>
+        <p><svg class="ic"><use href="#i-pointer"/></svg><span data-i18n="how2">ドラッグで位置を決めて、指をはなすと落ちる。ピンクの四角が着地点。</span></p>
+        <p><svg class="ic"><use href="#i-sparkle"/></svg><span data-i18n="how3">台の上の牌で役ができたら「ツモ！」を押して点数ゲット。使った牌は消えるよ。</span></p>
+        <p><svg class="ic"><use href="#i-heartbreak"/></svg><span data-i18n="how4">牌が台から落ちるとハートが減る。3つなくなるか、山がなくなったらおしまい。</span></p>
       </div>
-      <button class="btn primary" id="howClose" style="width:100%">とじる</button>
-      <div class="credits">効果音の一部：「パチンコ牙狼アーカイブ」（株式会社サンセイアールアンドディ）のフリー素材<br>CR牙狼GOLDSTORM翔　ガロ保留音（赤）・P.F.O.G.出現音・牙狼剣押下成功音</div>
+      <button class="btn primary" id="howClose" data-i18n="close" style="width:100%">とじる</button>
+      <div class="credits" data-i18n="credits">効果音の一部：「パチンコ牙狼アーカイブ」（株式会社サンセイアールアンドディ）のフリー素材<br>CR牙狼GOLDSTORM翔　ガロ保留音（赤）・P.F.O.G.出現音・牙狼剣押下成功音</div>
     </div>
   </div>
   <div class="overlay" id="quitOv">
     <div class="card">
       <div class="gtitle" style="font-size:30px" id="quitTitle">ゲームをやめる？</div>
       <div id="customBox" hidden>
-        <div class="clabel">背景<small>（おまかせは 12,000点で星屑、36,000点でオーロラ、そのあとは12,000点ごとに切り替わります）</small></div>
-        <div class="tabs ctabs" id="skyTabs"><button data-v="-1">おまかせ</button><button data-v="0">夕暮れ</button><button data-v="1">星屑</button><button data-v="2">オーロラ</button></div>
-        <div class="clabel">曲<small>（おまかせは 12,000点・36,000点、そのあとは12,000点ごとに切り替わります）</small></div>
-        <div class="tabs ctabs ctr" id="trackTabs"><button data-v="-1">おまかせ</button><button data-v="0">Sakura Drift</button><button data-v="1">星屑ランナー</button><button data-v="2">Beyond the clouds</button></div>
+        <div class="clabel" data-i18n="bg">背景<small>（おまかせは 12,000点で星屑、36,000点でオーロラ、そのあとは12,000点ごとに切り替わります）</small></div>
+        <div class="tabs ctabs" id="skyTabs"><button data-v="-1" data-i18n="auto">おまかせ</button><button data-v="0" data-i18n="dusk">夕暮れ</button><button data-v="1" data-i18n="stardust">星屑</button><button data-v="2" data-i18n="aurora">オーロラ</button></div>
+        <div class="clabel" data-i18n="song">曲<small>（おまかせは 12,000点・36,000点、そのあとは12,000点ごとに切り替わります）</small></div>
+        <div class="tabs ctabs ctr" id="trackTabs"><button data-v="-1" data-i18n="auto">おまかせ</button><button data-v="0">Sakura Drift</button><button data-v="1">星屑ランナー</button><button data-v="2">Beyond the clouds</button></div>
       </div>
       <p class="hint" id="quitNote" style="margin:10px 0 18px"></p>
       <div class="col">
-        <button class="btn primary" id="quitYes" style="font-size:17px;padding:12px">やめる</button>
-        <button class="btn" id="quitNo">つづける</button>
+        <button class="btn primary" id="quitYes" data-i18n="quit" style="font-size:17px;padding:12px">やめる</button>
+        <button class="btn" id="quitNo" data-i18n="keepOn">つづける</button>
       </div>
     </div>
   </div>
   <div class="overlay" id="colOv">
     <div class="card">
-      <div class="gtitle" style="font-size:30px">役コレクション</div>
+      <div class="gtitle" style="font-size:30px" data-i18n="col">役コレクション</div>
       <div class="hint" id="colProg"></div>
-      <div id="colInfo" class="colinfo">役をタップすると、作り方と牌の例が見られるよ</div>
+      <div id="colInfo" class="colinfo" data-i18n="colHint">役をタップすると、作り方と牌の例が見られるよ</div>
       <div id="colList" class="colgrid"></div>
-      <button class="btn primary" id="colClose" style="width:100%">とじる</button>
+      <button class="btn primary" id="colClose" data-i18n="close" style="width:100%">とじる</button>
     </div>
   </div>
   <div class="overlay" id="rankOv">
     <div class="card">
-      <div class="gtitle" style="font-size:32px">ランキング</div>
-      <div class="tabs mtabs"><button data-m="0" class="on">ふつう</button><button data-m="1">∞ エンドレス</button></div>
-      <div class="tabs"><button data-k="s" class="on">点数</button><button data-k="h">タワーの高さ</button><button data-k="k">連続和了</button></div>
+      <div class="gtitle" style="font-size:32px" data-i18n="rank">ランキング</div>
+      <div class="tabs mtabs"><button data-m="0" class="on" data-i18n="normal">ふつう</button><button data-m="1" data-i18n="endlessTab">∞ エンドレス</button></div>
+      <div class="tabs"><button data-k="s" class="on" data-i18n="score">点数</button><button data-k="h" data-i18n="height">タワーの高さ</button><button data-k="k" data-i18n="streak">連続和了</button></div>
       <div id="rankList"></div>
-      <p class="note" id="rankNote">記録はこの端末のブラウザに保存されます</p>
-      <button class="btn" id="gcBtn" hidden style="width:100%;margin-bottom:10px"><svg class="ic"><use href="#i-world"/></svg>世界ランキング（Game Center）</button>
-      <button class="btn primary" id="rankClose" style="width:100%">とじる</button>
+      <p class="note" id="rankNote" data-i18n="rankNote">記録はこの端末のブラウザに保存されます</p>
+      <button class="btn" id="gcBtn" hidden style="width:100%;margin-bottom:10px"><svg class="ic"><use href="#i-world"/></svg><span data-i18n="gc">世界ランキング（Game Center）</span></button>
+      <button class="btn primary" id="rankClose" data-i18n="close" style="width:100%">とじる</button>
     </div>
   </div>
   <div class="overlay" id="mbOv">
     <div class="card">
-      <div class="gtitle" style="font-size:28px">ミュージックボックス</div>
+      <div class="gtitle" style="font-size:28px" data-i18n="mb">ミュージックボックス</div>
       <div id="mbList" style="margin:14px 0"></div>
-      <p class="stream"><svg class="ic"><use href="#i-headphones"/></svg>Apple Music・Spotifyで配信中！<br><a href="https://music.apple.com/jp/album/6816609887" target="_blank" rel="noopener">アルバム「転落牌」を Apple Music で開く</a></p>
-      <button class="btn primary" id="mbClose" style="width:100%">とじる</button>
+      <p class="stream"><svg class="ic"><use href="#i-headphones"/></svg><span data-i18n="stream">Apple Music・Spotifyで配信中！</span><br><a id="amLink" href="https://music.apple.com/jp/album/6816609887" target="_blank" rel="noopener" data-i18n="amAlbum">アルバム「転落牌」を Apple Music で開く</a></p>
+      <button class="btn primary" id="mbClose" data-i18n="close" style="width:100%">とじる</button>
     </div>
   </div>
   <div id="ymfx"><div class="ym-stage">
@@ -189,8 +189,8 @@
     <div class="ym-glow"></div>
     <img class="ym-dragon" alt="" src="assets/img/yakuman-dragon.webp">
     <div class="ym-streak"></div>
-    <img class="ym-text" alt="役満" src="assets/img/yakuman-text.webp">
-  </div><div class="skip">タップでスキップ</div></div>
+    <img class="ym-text" alt="役満" data-i18n-alt="yakuman" src="assets/img/yakuman-text.webp">
+  </div><div class="skip" data-i18n="skip">タップでスキップ</div></div>
   <div id="flash"></div>
 </div>
 

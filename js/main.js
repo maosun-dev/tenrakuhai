@@ -471,7 +471,9 @@ function updateHud(){
   const lv=Math.max(0,Math.min(5,lives));$('hearts').innerHTML=ic('heart').repeat(lv)+ic('heart-empty').repeat(Math.max(0,3-lv));
 }
 const timg=(k,cls='')=>`<img class="t ${cls}" src="${faceURLs[k]}" alt="${kindName(k)}">`;
-function kindName(k){if(k<9)return NUMK[k]+'萬';if(k<18)return NUMK[k-9]+'筒';if(k<27)return NUMK[k-18]+'索';return HONK[k-27];}
+function kindName(k){return I18N.TILE(k,k<9?NUMK[k]+'萬':k<18?NUMK[k-9]+'筒':k<27?NUMK[k-18]+'索':HONK[k-27]);}
+// 役名の表示（英語はローマ字）
+const YN=I18N.YN,joinYaku=a=>a.join(I18N.lang==='en'?', ':'・');
 
 // 待ち（あと1枚で和了れる牌）。台の上の牌で調べる。同じ並びなら前の結果を使う
 let waitKey='',waitVal=[];
@@ -492,7 +494,7 @@ function renderHand(){
     h=best.groups.map(g=>`<span class="hg">${g.map(k=>timg(k,'used')).join('')}</span>`).join('');
     const r=[];for(let k=0;k<34;k++)for(let i=0;i<rest[k];i++)r.push(k);
     if(r.length)h+=`<span class="hg rest">${run(r)}</span>`;
-    lb.className='win';lb.innerHTML=`<span class="tag">和了れる！</span>${best.yaku.map(y=>y.n).join('・')}`;
+    lb.className='win';lb.innerHTML=`<span class="tag">${T('和了れる！','canWin')}</span>${joinYaku(best.yaku.map(y=>YN(y.n)))}`;
   }else{
     for(const [a,b] of [[0,9],[9,18],[18,27],[27,34]]){
       const g=[];for(let k=a;k<b;k++)for(let i=0;i<c[k];i++)g.push(k);
@@ -500,8 +502,8 @@ function renderHand(){
     }
     const w=waitsOf(c,n);
     if(w.length){
-      lb.className='tenpai';lb.innerHTML=`<span class="tag">あと1枚！</span><span class="wt">${w.slice(0,6).map(k=>timg(k,'ghost')).join('')}${w.length>6?'…':''}</span>${w.length>3?'のどれか':''}がくれば和了`;
-    }else{lb.className='';lb.innerHTML=`<span class="tag">台の上</span><b>${n}</b>枚${n<14?'<small>14枚から和了のチャンス</small>':''}`;}
+      lb.className='tenpai';lb.innerHTML=`<span class="tag">${T('あと1枚！','oneAway')}</span><span class="wt">${w.slice(0,6).map(k=>timg(k,'ghost')).join('')}${w.length>6?'…':''}</span>${I18N.lang==='en'?T('',w.length>1?'waitAny':'waitOne'):(w.length>3?'のどれか':'')+'がくれば和了'}`;
+    }else{lb.className='';lb.innerHTML=`<span class="tag">${T('台の上','onTable')}</span>${T(`<b>${n}</b>枚`,n===1?'tileN':'tilesN',{n:`<b>${n}</b>`})}${n<14?`<small>${T('14枚から和了のチャンス','from14')}</small>`:''}`;}
   }
   $('hand').innerHTML=h;$('hand').classList.toggle('many',n>=12);
 }
@@ -524,19 +526,19 @@ function pickWins(){
 function renderCtrl(){
   const el=$('ctrl');let h='';
   if(state==='choose'){
-    if(best)h+=`<div class="row"><button class="btn tsumo" id="bTsumo">ツモ！で ${best.points.toLocaleString()}点ゲット</button></div>`;
+    if(best)h+=`<div class="row"><button class="btn tsumo" id="bTsumo">${T(`ツモ！で ${best.points.toLocaleString()}点ゲット`,'tsumoBtn',{n:best.points.toLocaleString()})}</button></div>`;
     if(choices.length){
       const pwin=pickWins();
-      h+=`<div class="choose"><div class="q">どっちを<br>積む？</div>`+
+      h+=`<div class="choose"><div class="q">${T('どっちを<br>積む？','which')}</div>`+
         choices.map((k,i)=>{const w=pwin[i];
-          return w?`<button class="pick hot" data-i="${i}"><span class="pw">${best?'点数アップ':'和了れる！'}</span>${timg(k)}${kindName(k)}<span class="pts">${w.points.toLocaleString()}点</span></button>`
+          return w?`<button class="pick hot" data-i="${i}"><span class="pw">${best?T('点数アップ','ptsUp'):T('和了れる！','wins')}</span>${timg(k)}${kindName(k)}<span class="pts">${T(w.points.toLocaleString()+'点','nPts',{n:w.points.toLocaleString()})}</span></button>`
                   :`<button class="pick" data-i="${i}">${timg(k)}${kindName(k)}</button>`;}).join('')+`</div>`;
-    }else h+=`<div class="row"><button class="btn" id="bEnd">完走する</button></div>`;
+    }else h+=`<div class="row"><button class="btn" id="bEnd">${T('完走する','finish')}</button></div>`;
   }else if(state==='aim'){
-    h=`<div class="hint">ドラッグで動かして、指をはなすと落ちるよ</div>
-      <div class="row"><button class="btn" id="bRot">⟲ まわす</button><button class="btn" id="bStand">${held&&isStanding(held)?'↓ 寝かせる':'↑ 立てる'}</button></div>`;
+    h=`<div class="hint">${T('ドラッグで動かして、指をはなすと落ちるよ','dragHint')}</div>
+      <div class="row"><button class="btn" id="bRot">${T('⟲ まわす','rotate')}</button><button class="btn" id="bStand">${held&&isStanding(held)?T('↓ 寝かせる','layFlat'):T('↑ 立てる','standUp')}</button></div>`;
   }else if(state==='falling'){
-    h=`<div class="hint settle"><span class="dots"><i></i><i></i><i></i></span>牌が止まるまで ちょっと待ってね</div>`;
+    h=`<div class="hint settle"><span class="dots"><i></i><i></i><i></i></span>${T('牌が止まるまで ちょっと待ってね','settle')}</div>`;
   }
   el.innerHTML=h;
   el.querySelectorAll('.pick').forEach(b=>b.onclick=()=>pick(+b.dataset.i));
@@ -551,11 +553,11 @@ function renderCtrl(){
 /* ---------- はじめての人への案内（それぞれ1回だけ。下の枠の上に吹き出しで出す） ---------- */
 const COACH_KEY='tenraku-coach';
 const COACH={
-  pick:'まずは2枚のうち、好きな牌をタップしてえらんでね',
-  aim:'指でドラッグして落とす場所を決めよう。ピンクの四角が着地点。指をはなすと落ちるよ',
-  stack:'この調子で積み上げよう。台の上の牌で役ができると和了れるよ',
-  tenpai:'あと1枚！ 上に出ている牌を積めば和了れるよ',
-  tsumo:'役ができた！「ツモ！」を押すと点数ゲット。使った牌は消えるよ',
+  pick:T('まずは2枚のうち、好きな牌をタップしてえらんでね','coachPick'),
+  aim:T('指でドラッグして落とす場所を決めよう。ピンクの四角が着地点。指をはなすと落ちるよ','coachAim'),
+  stack:T('この調子で積み上げよう。台の上の牌で役ができると和了れるよ','coachStack'),
+  tenpai:T('あと1枚！ 上に出ている牌を積めば和了れるよ','coachTenpai'),
+  tsumo:T('役ができた！「ツモ！」を押すと点数ゲット。使った牌は消えるよ','coachTsumo'),
 };
 let coachSeen=null,coachNow=null;
 function coachLoad(){if(!coachSeen){try{coachSeen=JSON.parse(localStorage.getItem(COACH_KEY)||'{}');}catch(e){coachSeen={};}}return coachSeen;}
@@ -606,7 +608,7 @@ function newGame(){
 function toChoose(){
   state='choose';
   if(endless&&!boomAt&&!wall.length&&!choices.length){fillWall();lap++;const heal=lives<5;if(heal){lives++;chime([659,880,1175],.08,'sine',.1);}updateHud();
-    toast('山を補充！',heal?'gold':'info',`${lap}周目`+(heal?'　ハート +1':''));}
+    toast(T('山を補充！','refill'),heal?'gold':'info',T(`${lap}周目`,'lapN',{n:lap})+(heal?'　'+T('ハート +1','heartUp'):''));}
   if(!choices.length&&wall.length)choices=wall.splice(0,Math.min(2,wall.length));
   if(!choices.length&&!best){
     if(boomAt){boomAt=false;const gid=gameId;updateHud();renderHand();renderCtrl();setTimeout(()=>{if(gid===gameId&&state==='choose')finishRun();},2600);return;}
@@ -656,14 +658,14 @@ function drop(){
 }
 function onSettled(){
   const top=towerTop();settledTop=top;
-  if(top>maxHeight+0.05&&maxHeight>0.5&&top>2.5)toast('タワー新記録！','gold');
+  if(top>maxHeight+0.05&&maxHeight>0.5&&top>2.5)toast(T('タワー新記録！','towerRec'),'gold');
   maxHeight=Math.max(maxHeight,top);
   if(lives<=0){heartsOut(afterSettled);return;}
   afterSettled();
 }
 function afterSettled(){
   const had=!!best,c=boardCounts();best=c.reduce((a,b)=>a+b,0)>=14?findBest(c,winKind()):null;
-  if(best&&!had){chime([988,1319],.09,'sine',.1);toast('役ができた！','gold');}
+  if(best&&!had){chime([988,1319],.09,'sine',.1);toast(T('役ができた！','handMade'),'gold');}
   toChoose();
 }
 
@@ -672,7 +674,7 @@ const Ads=window.Ads||null;
 let revived=false,reviveResume=null;
 function heartsOut(resume){
   if(state==='revive')return;
-  if(revived||debug||!Ads||!Ads.canRevive()){gameOver('ハートがなくなっちゃった');return;}
+  if(revived||debug||!Ads||!Ads.canRevive()){gameOver(T('ハートがなくなっちゃった','outHearts'));return;}
   const prev=state,gid=gameId;
   state='revive';drag=null;
   reviveResume=()=>{state=prev;resume();};
@@ -686,14 +688,15 @@ $('reviveYes').onclick=async()=>{
   btn.disabled=false;
   if(gid!==gameId||state!=='revive')return;
   $('reviveOv').classList.remove('show');
-  if(!ok){reviveResume=null;gameOver('ハートがなくなっちゃった');return;}
+  if(!ok){reviveResume=null;gameOver(T('ハートがなくなっちゃった','outHearts'));return;}
   revived=true;lives=1;graceUntil=performance.now()+1500;updateHud();
-  toast('ハートが回復！','gold','ハート +1');chime([659,880,1175],.08,'sine',.1);
+  toast(T('ハートが回復！','revived'),'gold',T('ハート +1','heartUp'));chime([659,880,1175],.08,'sine',.1);
   const r=reviveResume;reviveResume=null;r();
 };
-$('reviveNo').onclick=()=>{$('reviveOv').classList.remove('show');reviveResume=null;gameOver('ハートがなくなっちゃった');};
+$('reviveNo').onclick=()=>{$('reviveOv').classList.remove('show');reviveResume=null;gameOver(T('ハートがなくなっちゃった','outHearts'));};
 let shake=0,winTimers=[];
-function rankName(h,ym){if(ym)return ym>1?ym+'倍役満':'役満';if(h>=11)return'三倍満';if(h>=8)return'倍満';if(h>=6)return'跳満';if(h>=5)return'満貫';return'';}
+function rankName(h,ym){if(ym)return ym>1?T(ym+'倍役満','yakumanN',{n:ym}):T('役満','yakuman');if(h>=11)return T('三倍満','sanbaiman');if(h>=8)return T('倍満','baiman');if(h>=6)return T('跳満','haneman');if(h>=5)return T('満貫','mangan');return'';}
+const hanText=h=>h?T(h+'翻','hanN',{n:h}):T('役満','yakuman');
 function countUp(target){
   const el=$('ptsNum');if(!el)return;const t0=performance.now();
   const f=now=>{const k=Math.min(1,(now-t0)/800);el.textContent=Math.round(target*(1-Math.pow(1-k,3))).toLocaleString();
@@ -711,14 +714,14 @@ function tsumo(){
   if(B.yakuman)playYakuman(()=>showWin(B));else showWin(B);
 }
 function showWin(B){
-  const step=.38,start=1.0,tEnd=start+B.yaku.length*step,rank=B.kazoe?'数え役満':rankName(B.han,B.yakuman),ym=B.yakuman?' ym':'';
+  const step=.38,start=1.0,tEnd=start+B.yaku.length*step,rank=B.kazoe?T('数え役満','kazoe'):rankName(B.han,B.yakuman),ym=B.yakuman?' ym':'';
   $('winBox').innerHTML=`
-    <div class="tsumoTxt${ym}">ツモ</div>
+    <div class="tsumoTxt${ym}">${T('ツモ','tsumo')}</div>
     <div class="wintiles">${B.groups.map(g=>`<div class="grp">${g.map(k=>timg(k)).join('')}</div>`).join('')}</div>
-    <div class="yakulist">${B.yaku.map((y,i)=>`<div class="yk" style="--d:${(start+i*step).toFixed(2)}s"><span class="yn">${y.n}${(B.newYaku||[]).includes(y.n)?'<span class="new">初</span>':''}</span><span class="yh">${y.h?y.h+'翻':'役満'}</span>${yakuDesc(y.n)?`<span class="yd">${yakuDesc(y.n)}</span>`:''}</div>`).join('')}</div>
+    <div class="yakulist">${B.yaku.map((y,i)=>`<div class="yk" style="--d:${(start+i*step).toFixed(2)}s"><span class="yn">${YN(y.n)}${(B.newYaku||[]).includes(y.n)?`<span class="new">${T('初','new')}</span>`:''}${I18N.YE(y.n)?`<small class="ye">${I18N.YE(y.n)}</small>`:''}</span><span class="yh">${hanText(y.h)}</span>${yakuDesc(y.n)?`<span class="yd">${yakuDesc(y.n)}</span>`:''}</div>`).join('')}</div>
     ${rank?`<div class="rank${ym}" style="--d:${(tEnd+.1).toFixed(2)}s">${rank}</div>`:''}
-    <div class="wpts" style="--d:${(tEnd+.35).toFixed(2)}s"><span id="ptsNum">0</span><small>点</small></div>
-    <button class="btn primary wbtn" id="winBtn" style="--d:${(tEnd+.9).toFixed(2)}s;font-size:17px;padding:12px 26px">牌を消してつづける</button>`;
+    <div class="wpts" style="--d:${(tEnd+.35).toFixed(2)}s"><span id="ptsNum">0</span><small>${T('点','ptsSmall')}</small></div>
+    <button class="btn primary wbtn" id="winBtn" style="--d:${(tEnd+.9).toFixed(2)}s;font-size:17px;padding:12px 26px">${T('牌を消してつづける','clearGo')}</button>`;
   $('winBtn').onclick=afterWin;
   const ov=$('winOv');ov.classList.add('show');ov.scrollTop=0;
   const fl=$('flash');fl.classList.remove('go');void fl.offsetWidth;fl.classList.add('go');
@@ -741,11 +744,11 @@ function afterWin(){
     if(autoTrack)setTrack(tier);
     if(autoSky){
       const fl=$('flash');fl.classList.remove('go');void fl.offsetWidth;fl.classList.add('go');
-      if(tier===2){setSky(2);toast('オーロラの空へ！','rainbow');}
-      else if(tier===1){setSky(1);toast('星屑ランナー！','star',`${(Math.floor(score/12000)*12000).toLocaleString()}点突破`);}
-      else{setSky(0);toast('夕暮れの空へ！','gold',`${(Math.floor(score/12000)*12000).toLocaleString()}点突破`);}
+      if(tier===2){setSky(2);toast(T('オーロラの空へ！','skyAurora'),'rainbow');}
+      else if(tier===1){setSky(1);toast(T('星屑ランナー！','skyStar'),'star',T(`${(Math.floor(score/12000)*12000).toLocaleString()}点突破`,'passedN',{n:(Math.floor(score/12000)*12000).toLocaleString()}));}
+      else{setSky(0);toast(T('夕暮れの空へ！','skyDusk'),'gold',T(`${(Math.floor(score/12000)*12000).toLocaleString()}点突破`,'passedN',{n:(Math.floor(score/12000)*12000).toLocaleString()}));}
     }
-    if(tier===2&&!debug&&unlockMB())setTimeout(()=>toast('ミュージックボックス解放！','rainbow','タイトル画面から聴けるよ'),autoSky?1900:0);
+    if(tier===2&&!debug&&unlockMB())setTimeout(()=>toast(T('ミュージックボックス解放！','mbUnlocked'),'rainbow',T('タイトル画面から聴けるよ','mbFromTitle')),autoSky?1900:0);
   }
   applyMusicVol(false);
   const need=Array(34).fill(0);best.tiles.forEach(k=>need[k]++);
@@ -764,7 +767,7 @@ function finishRun(){
   state='ending';choices=[];graceUntil=Infinity;
   if(held){scene.remove(held.mesh);held=null;}beam.visible=false;mark.visible=false;renderCtrl();
   score+=8000;updateHud();
-  toast('完走！','gold','完走ボーナス +8,000点');chime([523,659,784,1047,1319],.09,'triangle',.14);
+  toast(T('完走！','runDone'),'gold',T('完走ボーナス +8,000点','runBonus'));chime([523,659,784,1047,1319],.09,'triangle',.14);
   setTimeout(()=>{
     if(state!=='ending'||gid!==gameId)return;
     flashGo();shake=1.1;chime([196,147,110,82],.07,'sawtooth',.12);
@@ -781,7 +784,7 @@ function finishRun(){
     }
     for(const o of tiles)o.body.wakeUp();
   },900);
-  setTimeout(()=>{if(state==='ending'&&gid===gameId)gameOver('山をすべて使い切ったよ（完走ボーナス 8,000点）'+(unl?'　∞ エンドレスモードが解放されたよ！':''),pre,true);},3300);
+  setTimeout(()=>{if(state==='ending'&&gid===gameId)gameOver(T('山をすべて使い切ったよ（完走ボーナス 8,000点）','allUsed')+(unl?T('　∞ エンドレスモードが解放されたよ！','endlessOpen'):''),pre,true);},3300);
 }
 let overWait=false;
 function gameOver(reason,pre,done){
@@ -796,18 +799,19 @@ function gameOver(reason,pre,done){
   $('reviveOv').classList.remove('show');reviveResume=null;
   let lastHand=pre===undefined?null:pre;
   if(pre===undefined&&state!=='win'){const c=boardCounts();if(c.reduce((a,b)=>a+b,0)>=14)lastHand=findBest(c,winKind());}
-  document.querySelector('#overOv .gtitle').textContent=done?'完走！':'おしまい';
+  document.querySelector('#overOv .gtitle').textContent=done?T('完走！','runDone'):T('おしまい','over');
   if(lastHand){addCollection(lastHand);score+=lastHand.points;wins++;streak++;maxStreak=Math.max(maxStreak,streak);if(!bestHand||lastHand.points>bestHand.points)bestHand=lastHand;updateHud();}
   state='over';if(held){scene.remove(held.mesh);held=null;}beam.visible=false;mark.visible=false;
   let rec=0;const BK=endless?'ponpon-pai-best-endless':'ponpon-pai-best';try{rec=+localStorage.getItem(BK)||0;if(score>rec&&!debug)localStorage.setItem(BK,String(score));}catch(e){}
   if(score>=36000&&!debug)unlockMB();
   const place=debug?999:saveRecord();
   if(!debug&&window.GameCenter)GameCenter.submit(endless,score);
-  $('overReason').textContent=reason+(lastHand?`（台に残った役 ${lastHand.points.toLocaleString()}点も加えたよ）`:'');
-  $('overStats').innerHTML=`スコア <b>${score.toLocaleString()}</b> 点${score>rec&&score>0?` ${ic('party')}自己ベスト！`:''}<br>
-    和了した回数 <b>${wins}</b> 回<br>連続和了 最高 <b>${maxStreak}</b> 回<br>いちばん高いタワー <b>${(maxHeight*2.6).toFixed(1)}</b> cm
-    ${bestHand?`<br>最高の手 <b>${bestHand.yaku.filter(y=>y.n!=='門前清自摸和').map(y=>y.n).join('・')||'ツモのみ'}</b>`:''}
-    ${rec&&score<=rec?`<br>自己ベスト ${rec.toLocaleString()} 点`:''}${place<=10?`<br>${ic('trophy')}ランキング <b>${place}</b> 位！`:''}${debug?`<br>${ic('tile')}役満モード！なので記録されません`:''}`;
+  $('overReason').textContent=reason+(lastHand?T(`（台に残った役 ${lastHand.points.toLocaleString()}点も加えたよ）`,'leftHand',{n:lastHand.points.toLocaleString()}):'');
+  const bt=v=>`<b>${v}</b>`,bh=bestHand?joinYaku(bestHand.yaku.filter(y=>y.n!=='門前清自摸和').map(y=>YN(y.n)))||T('ツモのみ','tsumoOnly'):'';
+  $('overStats').innerHTML=`${T(`スコア ${bt(score.toLocaleString())} 点`,'stScore',{n:score.toLocaleString()})}${score>rec&&score>0?` ${ic('party')}${T('自己ベスト！','stBest')}`:''}<br>
+    ${T(`和了した回数 ${bt(wins)} 回`,'stWins',{n:wins})}<br>${T(`連続和了 最高 ${bt(maxStreak)} 回`,'stStreak',{n:maxStreak})}<br>${T(`いちばん高いタワー ${bt((maxHeight*2.6).toFixed(1))} cm`,'stTower',{n:(maxHeight*2.6).toFixed(1)})}
+    ${bestHand?`<br>${T(`最高の手 ${bt(bh)}`,'stHand',{n:bh})}`:''}
+    ${rec&&score<=rec?`<br>${T(`自己ベスト ${rec.toLocaleString()} 点`,'stRec',{n:rec.toLocaleString()})}`:''}${place<=10?`<br>${ic('trophy')}${T(`ランキング ${bt(place)} 位！`,'stPlace',{n:place})}`:''}${debug?`<br>${ic('tile')}${T('役満モード！なので記録されません','stDebug')}`:''}`;
   $('overOv').classList.add('show');chime([392,330,262],.18,'triangle',.12);
   if(Ads)Ads.showBanner();
 }
@@ -918,9 +922,9 @@ function loop(now){
     }else if(t.body.position.y<-7){
       removeTile(t);
       if(now>graceUntil&&state!=='over'&&lives>0){   // ハートが0のあとに落ちた牌では「落ちちゃった」を重ねない
-        lives--;streak=0;updateHud();toast('落ちちゃった…','fall','ハート −1');chime([523,392],.12,'triangle',.12);
+        lives--;streak=0;updateHud();toast(T('落ちちゃった…','fell'),'fall',T('ハート −1','heartDown'));chime([523,392],.12,'triangle',.12);
         if(lives<=0&&(state==='choose'||state==='aim'))heartsOut(()=>{renderHand();renderCtrl();});
-        else if(lives<=0&&state!=='falling'&&state!=='win'&&state!=='revive')gameOver('ハートがなくなっちゃった');
+        else if(lives<=0&&state!=='falling'&&state!=='win'&&state!=='revive')gameOver(T('ハートがなくなっちゃった','outHearts'));
       }
       if(state==='choose'||state==='aim'){best=null;renderHand();if(state==='choose')renderCtrl();}
     }
@@ -1132,13 +1136,13 @@ let rankSort='s';
 function renderRanks(){
   const list=loadRanks(rankMode).slice().sort((a,b)=>(b[rankSort]-a[rankSort])||(b.s-a.s)).slice(0,10);
   const md=[ic('medal1'),ic('medal2'),ic('medal3')];
-  if(!list.length){$('rankList').innerHTML='<p class="hint" style="margin:24px 0">まだ記録がないよ。遊んでみよう！</p>';return;}
+  if(!list.length){$('rankList').innerHTML=`<p class="hint" style="margin:24px 0">${T('まだ記録がないよ。遊んでみよう！','noRec')}</p>`;return;}
   const f=d=>{const x=new Date(d);return`${x.getMonth()+1}/${x.getDate()}`;};
-  $('rankList').innerHTML=`<div class="tw"><table class="rtable"><thead><tr><th></th><th>点数</th><th>高さ</th><th>連続</th><th>日付</th></tr></thead><tbody>${
+  $('rankList').innerHTML=`<div class="tw"><table class="rtable"><thead><tr><th></th><th>${T('点数','score')}</th><th>${T('高さ','height')}</th><th>${T('連続','streak')}</th><th>${T('日付','date')}</th></tr></thead><tbody>${
     list.map((r,i)=>`<tr class="${r.d===lastRecId?'me':''}"><td>${md[i]||i+1}</td>
       <td class="${rankSort==='s'?'hl':''}">${r.s.toLocaleString()}</td>
       <td class="${rankSort==='h'?'hl':''}">${r.h.toFixed(1)}cm</td>
-      <td class="${rankSort==='k'?'hl':''}">${r.k}回</td><td>${f(r.d)}</td></tr>`).join('')}</tbody></table></div>`;
+      <td class="${rankSort==='k'?'hl':''}">${I18N.lang==='en'?r.k:r.k+'回'}</td><td>${f(r.d)}</td></tr>`).join('')}</tbody></table></div>`;
 }
 let rankMode=0;
 document.querySelectorAll('#rankOv .tabs:not(.mtabs) button').forEach(b=>b.onclick=()=>{
@@ -1149,15 +1153,18 @@ $('rankBtn').onclick=()=>{rankMode=endless?1:0;document.querySelectorAll('#rankO
 $('rankClose').onclick=()=>$('rankOv').classList.remove('show');
 // 世界ランキング（iPhoneアプリ版だけ。js/gamecenter.js）
 if(window.GameCenter){
-  $('gcBtn').hidden=false;$('rankNote').textContent='この一覧はこの端末の記録です';
-  $('gcBtn').onclick=async()=>{if(!await GameCenter.show(rankMode===1))toast('Game Center にサインインすると見られるよ','info','設定アプリ → Game Center');};
+  $('gcBtn').hidden=false;$('rankNote').textContent=T('この一覧はこの端末の記録です','rankNoteApp');
+  $('gcBtn').onclick=async()=>{if(!await GameCenter.show(rankMode===1))toast(T('Game Center にサインインすると見られるよ','gcSignIn'),'info',T('設定アプリ → Game Center','gcWhere'));};
 }
 
 /* ---------- ミュージックボックス ---------- */
 const MBKEY='tenraku-musicbox';
 // [曲名, 流れる場面, Apple Music の曲ID]（アルバム「転落牌 - Single」）
-const TRACK_INFO=[['Sakura Drift','タイトル・0〜11,999点','6816609888'],['星屑ランナー','12,000〜35,999点','6816609889'],['Beyond the clouds','36,000点〜','6816609890']];
+const TRACK_INFO=[['Sakura Drift',T('タイトル・0〜11,999点','scene0'),'6816609888'],['星屑ランナー',T('12,000〜35,999点','scene1'),'6816609889'],['Beyond the clouds',T('36,000点〜','scene2'),'6816609890']];
 const AM_ALBUM='https://music.apple.com/jp/album/6816609887';
+// 英語のときは Apple Music も英語表示で開く
+const AM_LANG=I18N.lang==='en'?'&l=en-US':'';
+if(I18N.lang==='en')$('amLink').href=AM_ALBUM+'?l=en-US';
 const ALLKEY='tenraku-all';
 const EKEY='tenraku-endless';
 function endlessUnlocked(){try{return localStorage.getItem(EKEY)==='1'||allUnlocked();}catch(e){return false;}}
@@ -1172,9 +1179,9 @@ function stopMusic(){
 }
 function renderMB(){
   $('mbList').innerHTML=TRACK_INFO.map(([t,s,am],i)=>{const on=curTrack===i;
-    return`<div class="mb"><button class="pl" data-i="${i}" aria-label="${t}を${on?'停止':'再生'}">${on?'■':'▶'}</button>
+    return`<div class="mb"><button class="pl" data-i="${i}" aria-label="${on?T(`${t}を停止`,'stopT',{t}):T(`${t}を再生`,'playT',{t})}">${on?'■':'▶'}</button>
       <div class="mbt"><div class="nm">${t}${on?'<span class="eq"><span></span><span></span><span></span></span>':''}</div><div class="sb">${s}</div></div>
-      <a class="am" href="${AM_ALBUM}?i=${am}" target="_blank" rel="noopener" aria-label="${t}をApple Musicで聴く">♪ Apple Music</a></div>`;}).join('');
+      <a class="am" href="${AM_ALBUM}?i=${am}${AM_LANG}" target="_blank" rel="noopener" aria-label="${T(`${t}をApple Musicで聴く`,'amT',{t})}">♪ Apple Music</a></div>`;}).join('');
   $('mbList').querySelectorAll('.pl').forEach(b=>b.onclick=()=>{
     const i=+b.dataset.i;ac();initBGM();
     if(curTrack===i)stopMusic();
@@ -1182,7 +1189,7 @@ function renderMB(){
     renderMB();});
 }
 $('mbBtn').onclick=()=>{
-  if(!mbUnlocked()){toast('36,000点をこえると解放されるよ');return;}
+  if(!mbUnlocked()){toast(T('36,000点をこえると解放されるよ','mbLocked'));return;}
   ac();initBGM();renderMB();$('mbOv').classList.add('show');$('mbOv').scrollTop=0;};
 $('mbClose').onclick=()=>{$('mbOv').classList.remove('show');if(curTrack!==0)setTrack(0);};
 
@@ -1265,7 +1272,7 @@ const YAKU_INFO={
   '九蓮宝燈':{d:'1つの色で 一一一二三四五六七八九九九 ＋どれか1枚',ex:[0,0,0,1,2,3,4,5,6,7,8,8,8,4]},
   '数え役満':{d:'役の翻数を合わせて13翻以上になると役満あつかい',ex:null},
 };
-const yakuDesc=n=>(YAKU_INFO[n]||{}).d||'';
+const yakuDesc=n=>I18N.YD(n,(YAKU_INFO[n]||{}).d||'');
 const YAKU_LIST=[['門前清自摸和',1],['断么九',1],['平和',1],['一盃口',1],['役牌 白',1],['役牌 發',1],['役牌 中',1],['役牌 東',1],
   ['三色同順',2],['一気通貫',2],['三暗刻',2],['小三元',2],['七対子',2],['混老頭',2],['混全帯么九',2],
   ['混一色',3],['純全帯么九',3],['二盃口',3],['清一色',6],['大三元',0],['四暗刻',0],['字一色',0],['国士無双',0],['緑一色',0],['清老頭',0],['小四喜',0],['大四喜',0],['九蓮宝燈',0],['数え役満',0]];
@@ -1282,11 +1289,11 @@ function renderCol(){
   const c=loadCol();let got=0,total=0;
   $('colList').innerHTML=YAKU_LIST.map(([n,h])=>{
     const k=c[n]||0;total+=k;if(k)got++;
-    const hs=h?h+'翻':'役満';
+    const hs=hanText(h);
     const open=k||allUnlocked();
-    return`<button class="ci${h?'':' ym'}${open?'':' lock'}" data-n="${n}"><div class="n">${n}</div><div class="m"><span>${hs}</span><span>${open?`<b>${k}</b> 回`:'まだ'}</span></div></button>`;
+    return`<button class="ci${h?'':' ym'}${open?'':' lock'}" data-n="${n}"><div class="n">${YN(n)}${I18N.YE(n)?`<small>${I18N.YE(n)}</small>`:''}</div><div class="m"><span>${hs}</span><span>${open?T(`<b>${k}</b> 回`,'timesN',{n:k}):T('まだ','notYet')}</span></div></button>`;
   }).join('');
-  $('colProg').textContent=`${got} / ${YAKU_LIST.length} 種類　のべ ${total} 回`;
+  $('colProg').textContent=T(`${got} / ${YAKU_LIST.length} 種類　のべ ${total} 回`,'colProg',{a:got,b:YAKU_LIST.length,t:total});
   $('colList').querySelectorAll('.ci').forEach(b=>b.onclick=()=>showYakuInfo(b.dataset.n));
 }
 // 牌の例を面子ごとに分ける（組み立てがわかるように）
@@ -1295,7 +1302,7 @@ function exGroups(ex){const c=Array(34).fill(0);ex.forEach(k=>c[k]++);const B=fi
 function showYakuInfo(n){
   const I=YAKU_INFO[n],box=$('colInfo');if(!I)return;
   const h=(YAKU_LIST.find(y=>y[0]===n)||[])[1];
-  box.innerHTML=`<div class="cin"><b>${n}</b><span>${h?h+'翻':'役満'}</span></div><p>${I.d}</p>`+
+  box.innerHTML=`<div class="cin"><b>${YN(n)}${I18N.YE(n)?`<small>${I18N.YE(n)}</small>`:''}</b><span>${hanText(h)}</span></div><p>${I18N.YD(n,I.d)}</p>`+
     (I.ex?`<div class="cex">${exGroups(I.ex).map(g=>`<span>${g.map(k=>timg(k)).join('')}</span>`).join('')}</div>`:'');
   box.classList.add('on');
   document.querySelectorAll('#colList .ci').forEach(b=>b.classList.toggle('sel',b.dataset.n===n));
@@ -1308,7 +1315,7 @@ $('colClose').onclick=()=>$('colOv').classList.remove('show');
 // App Store に出す版（本物の広告の版）では使えない：審査の「隠し機能」に当たらないように
 const STORE_BUILD=!!(window.ADS_CONFIG&&window.ADS_CONFIG.production);
 let debug=false,dbgSeq=0,revSeq=0,dbl=false,dblSeq=0,boom=false,boomSeq=0,boomAt=false;
-function badgeText(){return boom?ic('boom')+'爆発テストモード':dbl?ic('tile')+'ダブル役満モード！':ic('tile')+'役満モード！';}
+function badgeText(){return boom?ic('boom')+T('爆発テストモード','dbgBoom'):dbl?ic('tile')+T('ダブル役満モード！','dbgBadge2'):ic('tile')+T('役満モード！','dbgBadge');}
 const REV_ORDER=['c','b','a'];
 const DBG_ORDER=['a','b','c'];
 $('startOv').addEventListener('click',e=>{
@@ -1377,12 +1384,12 @@ function debugSetup(){
 $('quitBtn').onclick=()=>{
   if(!['choose','aim','falling'].includes(state))return;
   drag=null;
-  $('quitTitle').textContent=endless?'ひと休み':'ゲームをやめる？';$('customBox').hidden=!endless;renderCustom();
-  $('quitYes').textContent=endless?'ゲームをやめる':'やめる';
-  $('quitNote').textContent=debug?'役満モード！なので記録は残りません':'ここまでの点数はランキングに記録されるよ';
+  $('quitTitle').textContent=endless?T('ひと休み','rest'):T('ゲームをやめる？','quitQ');$('customBox').hidden=!endless;renderCustom();
+  $('quitYes').textContent=endless?T('ゲームをやめる','quitGame'):T('やめる','quit');
+  $('quitNote').textContent=debug?T('役満モード！なので記録は残りません','quitNoteDbg'):T('ここまでの点数はランキングに記録されるよ','quitNote');
   $('quitOv').classList.add('show');
 };
 $('quitNo').onclick=()=>$('quitOv').classList.remove('show');
-$('quitYes').onclick=()=>{$('quitOv').classList.remove('show');gameOver('途中でやめたよ');};
+$('quitYes').onclick=()=>{$('quitOv').classList.remove('show');gameOver(T('途中でやめたよ','quitMid'));};
 boot();
 })();

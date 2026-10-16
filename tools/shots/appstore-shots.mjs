@@ -55,7 +55,7 @@ const mouse = (type, x, y) => send('Input.dispatchMouseEvent', { type, x, y, but
 async function load(setup) {
   await send('Page.navigate', { url: URL });
   await sleep(800);
-  await ev(`localStorage.clear();${setup || ''};'ok'`);
+  await ev(`localStorage.clear();${process.env.LANG_EN ? "localStorage.setItem('tenraku-lang','en');" : ''}${setup || ''};'ok'`);
   await send('Page.reload', { ignoreCache: true });
   await waitFor(`!!document.getElementById('startBtn') && !document.getElementById('startBtn').disabled`, 20000);
   await sleep(1200);
@@ -98,7 +98,8 @@ if (want('stack')) {
     await waitFor(`!!document.querySelector('#ctrl .pick')`, 12000);
     await waitFor(`document.getElementById('toast').innerHTML===''`, 6000);
     await sleep(500);
-    const full = await ev(`document.querySelectorAll('#hearts use[href="#i-heart-empty"]').length===0`);
+    const lost = await ev(`document.querySelectorAll('#hearts use[href="#i-heart-empty"]').length`);
+    const full = lost <= (+process.env.ALLOW_LOST || 0);
     const n = await ev(`document.querySelectorAll('#hand .t').length`);
     console.log('stack attempt', attempt, 'hearts full', full, 'tiles', n);
     await waitFor(`!!document.querySelector('#ctrl .pick') && document.getElementById('toast').innerHTML===''`, 45000);

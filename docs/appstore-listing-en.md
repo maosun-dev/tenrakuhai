@@ -60,5 +60,5 @@ riichi,tiles,tower,balance,physics,blocks,yaku,casual,brain,offline,board game,r
 |---|---|
 | Support URL | https://maosun-dev.com/support.html |
 | Marketing URL | https://maosun-dev.com/ |
-| Privacy Policy URL | https://maosun-dev.com/tenrakuhai/privacy.html (an English page is still needed) |
+| Privacy Policy URL | https://maosun-dev.com/tenrakuhai/privacy-en.html (available once pushed) |
 | Copyright | 2026 maosun-dev |

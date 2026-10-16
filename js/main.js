@@ -999,6 +999,9 @@ async function boot(){
   demoStack();camY=settledTop;
   const sb=$('startBtn');sb.disabled=false;sb.textContent=T('あそぶ','play');$('endlessBtn').disabled=false;refreshTitle();fitTitle();setTimeout(fitTitle,300);
   if(Ads)Ads.showBanner();
+  // アプリ版はタップを待たずに BGM を始める（Web 版はブラウザの自動再生制限があるので最初のタップから）
+  const cap=window.Capacitor;
+  if(cap&&cap.isNativePlatform&&cap.isNativePlatform()){ac();initBGM();}
   requestAnimationFrame(loop);
 }
 
